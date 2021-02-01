@@ -1,4 +1,13 @@
-# 'Kaleidoscope' Project
+This is the backend piece of the overall kaliedoscope application. 
+
+Refer to the Dockerfile for specifics on how to get things running properly.
+Generally, it's just a straight up node application that requires a number of environment variables 
+to be set prior to execution. 
+
+The following environment variables need to be set correctly to run this server: 
+- IMAGE_DIRECTORY -- directory that contains webm files to serve
+- FILE_INFO_PATH -- json file to use as file meta info storage
+- PORT -- port to run express server on 
 
 ### Docker
 This app can be wrapped in a docker container to support easier execution wherever it needs be. 

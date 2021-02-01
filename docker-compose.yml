@@ -17,6 +17,3 @@ services:
     volumes:
       - ~/projects/wsg_scraper/image_pool:/media/kaleidoscope/
       - ~/projects/kaleidoscope/songmeta.json:/media/songmeta.json
-
-#volumes:
-#  # Host : Container
