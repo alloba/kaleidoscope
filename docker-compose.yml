@@ -1,0 +1,22 @@
+version: "3.9"
+services:
+  frontend:
+    build: "./frontend"
+    environment:
+      - TEST=1
+    ports:
+      - "80:80"
+  backend:
+    build: "./backend"
+    environment:
+      - PORT=7000
+      - IMAGE_DIRECTORY=/media/kaleidoscope
+      - FILE_INFO_PATH=/media/songmeta.json
+    ports:
+      - "7000:7000"
+    volumes:
+      - ~/projects/wsg_scraper/image_pool:/media/kaleidoscope/
+      - ~/projects/kaleidoscope/songmeta.json:/media/songmeta.json
+
+#volumes:
+#  # Host : Container
