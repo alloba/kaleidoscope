@@ -1,13 +1,15 @@
-version: "3.9"
+version: "3.3"
 services:
   frontend:
     build: "./frontend"
+    restart: always
     environment:
       - TEST=1
     ports:
       - "80:80"
   backend:
     build: "./backend"
+    restart: always
     environment:
       - PORT=7000
       - IMAGE_DIRECTORY=/media/kaleidoscope

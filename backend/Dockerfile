@@ -1,9 +1,9 @@
 FROM node:latest
 #WORKDIR /dist/
-COPY . .
+COPY . /dist/
 RUN mkdir -p /media/kaleidoscope
 RUN touch /media/songmeta.json
-RUN npm install 
+RUN npm install && npm install -g typescript
 RUN npm run build
 EXPOSE 7000
 
