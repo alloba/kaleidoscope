@@ -1,5 +1,5 @@
 FROM node:latest
-#WORKDIR /dist/
+WORKDIR /dist/
 COPY . /dist/
 RUN mkdir -p /media/kaleidoscope
 RUN touch /media/songmeta.json

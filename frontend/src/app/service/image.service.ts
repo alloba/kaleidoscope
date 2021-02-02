@@ -26,22 +26,21 @@ export class ImageService {
 
   public loadNextImageInformationSet(): void {
     this.currentImageIndex += 1
-    if (this.currentImageIndex == this.images.length) {
+    if (this.currentImageIndex >= this.images.length) {
       this.refreshImageList()
     } else {
       this.updateCurrentImage(this.images[this.currentImageIndex])
-      this.filename$.next(this.images[this.currentImageIndex])
     }
   }
 
   public loadPreviousImageInformationSet(): void {
     this.currentImageIndex -= 1;
     if (this.currentImageIndex < 0) {
-      this.currentImageIndex = 0;
-      this.updateCurrentImage(this.images[this.currentImageIndex]);
+      // this.currentImageIndex = 0;
+      // this.updateCurrentImage(this.images[this.currentImageIndex]);
+      return;
     } else {
       this.updateCurrentImage(this.images[this.currentImageIndex])
-      this.filename$.next(this.images[this.currentImageIndex])
     }
   }
 
@@ -66,6 +65,8 @@ export class ImageService {
 
     this.getMetaInfo(filename)
       .subscribe({next: value => this.currentImageMeta$.next(value)})
+
+    this.filename$.next(this.images[this.currentImageIndex])
   }
 
   public getImage(filename: string): Observable<Blob> {
