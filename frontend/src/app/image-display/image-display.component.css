@@ -1,0 +1,26 @@
+
+#video-div {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, 10%);
+  width: 75%;
+  height: 75%;
+}
+
+#video-tag {
+  height: 100%;
+  width: 100%;
+}
+
+#load-button {
+  position: fixed;
+  bottom: 1%;
+}
+
+.button-styling {
+  border: none;
+  color: white;
+  background-color: blueviolet;
+  text-align: center;
+  font-size: 1.5em;
+}

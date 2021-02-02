@@ -1,3 +1,11 @@
-<p>image-display works!</p>
-<button (click)="loadRandomImage()">Click Me Random Image</button>
-<button (click)="getCurrentImageList()">Click Me Image List</button>
+<div id="container-area">
+  <div id="video-div" >
+    <video id="video-tag" #videoElement controls [src]="imageUrl">
+      <source type="video/webm" src="">
+    </video>
+  </div>
+
+  <button id="load-button" (click)="transitionImage()" class="button-styling">Next</button>
+  <p style="color: aliceblue">{{this.currentFilename}}</p>
+</div>
+
