@@ -51,7 +51,7 @@ export class ImageService {
           this.images$.next(x);
           this.images = shuffleArray;
 
-          this.currentImageIndex = 0;
+          this.currentImageIndex = -1; //start at -1 to deal with the increment behavior of next method call.
           this.loadNextImageInformationSet();
         }
       });
