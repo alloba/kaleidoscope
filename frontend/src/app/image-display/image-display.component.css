@@ -12,7 +12,13 @@
   width: 100%;
 }
 
-#load-button {
+#load-button-1 {
+  position: fixed;
+  bottom: 5%;
+}
+
+
+#load-button-2 {
   position: fixed;
   bottom: 1%;
 }

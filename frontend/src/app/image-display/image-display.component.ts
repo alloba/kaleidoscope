@@ -45,7 +45,7 @@ export class ImageDisplayComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     this.videoElement.nativeElement.addEventListener('ended', () => {
-      this.transitionImage();
+      this.transitionImageForward();
     });
   }
 
@@ -58,8 +58,12 @@ export class ImageDisplayComponent implements OnInit, OnDestroy, AfterViewInit {
       .load()
   }
 
-  public transitionImage(): void {
+  public transitionImageForward(): void {
     this.imageService.loadNextImageInformationSet();
+  }
+
+  public transitionImageBackward(): void {
+    this.imageService.loadPreviousImageInformationSet();
   }
 
   private convertImageToUrl(file: Blob) {

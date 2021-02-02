@@ -25,12 +25,23 @@ export class ImageService {
   }
 
   public loadNextImageInformationSet(): void {
+    this.currentImageIndex += 1
     if (this.currentImageIndex == this.images.length) {
       this.refreshImageList()
     } else {
       this.updateCurrentImage(this.images[this.currentImageIndex])
       this.filename$.next(this.images[this.currentImageIndex])
-      this.currentImageIndex += 1
+    }
+  }
+
+  public loadPreviousImageInformationSet(): void {
+    this.currentImageIndex -= 1;
+    if (this.currentImageIndex < 0) {
+      this.currentImageIndex = 0;
+      this.updateCurrentImage(this.images[this.currentImageIndex]);
+    } else {
+      this.updateCurrentImage(this.images[this.currentImageIndex])
+      this.filename$.next(this.images[this.currentImageIndex])
     }
   }
 
