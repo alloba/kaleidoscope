@@ -1,12 +1,17 @@
-<div id="container-area">
-  <div id="video-div" >
-    <video id="video-tag" #videoElement controls [src]="imageUrl">
-      <source type="video/webm" src="">
-    </video>
+<div class="image-display-grid-container">
+  <div id="container-area">
+    <div id="video-div" >
+      <video id="video-tag" #videoElement controls [src]="imageUrl">
+        <source type="video/webm" src="">
+      </video>
+    </div>
   </div>
 
   <button id="load-button-1" (click)="transitionImageBackward()" class="button-styling">Prev</button>
   <button id="load-button-2" (click)="transitionImageForward()" class="button-styling">Next</button>
-  <p style="color: aliceblue">{{this.currentFilename}}</p>
+
+  <p id="filename">{{this.currentFilename}}</p>
+
+  <app-meta-info-viewer id="meta-container"></app-meta-info-viewer>
 </div>
 

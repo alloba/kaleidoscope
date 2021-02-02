@@ -6,11 +6,13 @@ import { AppComponent } from './app.component';
 import { HttpClientModule} from '@angular/common/http';
 import { ImageDisplayComponent } from './image-display/image-display.component'
 import {FormsModule} from "@angular/forms";
+import { MetaInfoViewerComponent } from './meta-info-viewer/meta-info-viewer.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    ImageDisplayComponent
+    ImageDisplayComponent,
+    MetaInfoViewerComponent
   ],
     imports: [
         BrowserModule,

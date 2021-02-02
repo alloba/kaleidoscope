@@ -1,10 +1,28 @@
 
-#video-div {
+.image-display-grid-container {
   position: absolute;
   left: 50%;
   transform: translate(-50%, 10%);
-  width: 75%;
-  height: 75%;
+  width: 90%;
+  height: 90%;
+
+  display: grid;
+  grid-template-areas:
+    'main main main main'
+    'main main main main'
+    'main main main main'
+    'tl   mt1  r1   tr  '
+    'bl   mb   r1   br  ';
+
+  grid-gap: 5px;
+  grid-template-rows: auto auto auto 2em 2em;
+  grid-template-columns: 10em auto auto 10em;
+
+}
+
+#video-div {
+  height: 70vh;
+  margin: auto;
 }
 
 #video-tag {
@@ -13,14 +31,25 @@
 }
 
 #load-button-1 {
-  position: fixed;
-  bottom: 5%;
+  grid-area: bl;
 }
 
 
 #load-button-2 {
-  position: fixed;
-  bottom: 1%;
+  grid-area: br;
+}
+
+#filename {
+  grid-area: mb;
+  color: white;
+}
+
+#meta-container {
+  grid-area: r1;
+}
+
+#container-area {
+  grid-area: main;
 }
 
 .button-styling {
