@@ -1,9 +1,8 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import {Observable, ReplaySubject, Subscription} from 'rxjs';
+import {Observable, ReplaySubject} from 'rxjs';
 import {environment} from 'src/environments/environment';
 import {FileMeta} from "../model/file-meta";
-import {first} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
@@ -36,9 +35,8 @@ export class ImageService {
   public loadPreviousImageInformationSet(): void {
     this.currentImageIndex -= 1;
     if (this.currentImageIndex < 0) {
-      // this.currentImageIndex = 0;
+      this.currentImageIndex = 0;
       // this.updateCurrentImage(this.images[this.currentImageIndex]);
-      return;
     } else {
       this.updateCurrentImage(this.images[this.currentImageIndex])
     }
