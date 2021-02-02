@@ -12,11 +12,11 @@
     'main main main main'
     'main main main main'
     'tl   mt1  r1   tr  '
-    'bl   mb   r1   br  ';
+    'bl   mb   mb   br  ';
 
   grid-gap: 5px;
-  grid-template-rows: auto auto auto 2em 2em;
-  grid-template-columns: 10em auto auto 10em;
+  grid-template-rows: auto auto auto 8em 3em;
+  grid-template-columns: 10em 40% auto 10em;
 
 }
 
@@ -42,11 +42,12 @@
 #filename {
   grid-area: mb;
   color: white;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  /*display: flex;*/
 }
 
-#meta-container {
-  grid-area: r1;
-}
 
 #container-area {
   grid-area: main;
