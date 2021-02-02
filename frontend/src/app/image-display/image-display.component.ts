@@ -32,7 +32,6 @@ export class ImageDisplayComponent implements OnInit, OnDestroy, AfterViewInit {
         this.metaInfo = value[1];
         this.currentFilename = value[2];
 
-        console.log(this.metaInfo)
         this.convertImageToUrl(this.file);
       }
     })
