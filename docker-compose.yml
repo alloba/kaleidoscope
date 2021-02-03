@@ -17,5 +17,5 @@ services:
     ports:
       - "${BACKEND_PORT:-7000}:7000"
     volumes:
-      - "${MEDIA_VOL:-~/projects/wsg_scraper/image_pool}":/media/kaleidoscope/
-      - "${META_FILE:-~/projects/kaleidoscope/songmeta.json}":/media/songmeta.json
+      - ${MEDIA_VOL:-~/projects/wsg_scraper/image_pool}:/media/kaleidoscope/
+      - ${META_FILE:-~/projects/kaleidoscope/songmeta.json}:/media/songmeta.json
