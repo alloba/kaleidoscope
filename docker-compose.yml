@@ -17,5 +17,5 @@ services:
     ports:
       - "7000:7000"
     volumes:
-      - /home/alloba/projects/wsg_scraper/image_pool:/media/kaleidoscope/
-      - /home/alloba/projects/kaleidoscope/songmeta.json:/media/songmeta.json
+      - "${MEDIA_VOL:-~/projects/wsg_scraper/image_pool:/media/kaleidoscope/}"
+      - "${META_FILE:-~/projects/kaleidoscope/songmeta.json:/media/songmeta.json}"
