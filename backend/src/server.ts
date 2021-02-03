@@ -47,6 +47,8 @@ app.get('/image', (req, res) => {
 app.get('/imageList',  cors(), (req, res) => {
     const imageList = imageService.getImageList();
     res.setHeader('Cache-Control', 'no-cache')
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     res.send(imageList);
 });
 
