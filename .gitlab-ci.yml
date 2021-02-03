@@ -14,3 +14,6 @@ deploy1:
   stage: deploy
   script:
     - docker-compose .
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: always
