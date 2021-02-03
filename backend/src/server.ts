@@ -39,7 +39,7 @@ app.get('/image', (req, res) => {
     res.sendFile(imageFullPath)
 });
 
-app.get('/imageList',  (req, res) => {
+app.get('/imageList',  cors(), (req, res) => {
     const imageList = imageService.getImageList();
     res.setHeader('Cache-Control', 'no-cache')
     res.send(imageList);
