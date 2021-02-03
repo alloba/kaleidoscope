@@ -2,9 +2,12 @@
 
 FROM node:alpine AS my-app-build
 WORKDIR /app
-COPY . .
-RUN npm ci && npm run build
+COPY package.json .
+COPY package-lock.json .
+RUN npm ci
 
+COPY . .
+RUN npm run build
 # stage 2
 
 FROM nginx:alpine
