@@ -11,9 +11,10 @@ let imageDirectory = '/projects/wsg_scraper/image_pool/'; //this is the default 
 let fileInformationPath = '/projects/kaleidoscope/testinfo.json' //both of these are actually provided at launch (through launch.json in the case of vscode)
 
 processStartupArgs();
-const app = express(); 
-app.use(express.json(), cors());
-// app.use(cors());
+const app = express();
+app.use(cors());
+app.options('*', cors());
+app.use(express.json());
 
 const imageService = new ImageService(imageDirectory);
 const fileinfoService = new FileInfoService(fileInformationPath);
