@@ -6,16 +6,17 @@ services:
     environment:
       - TEST=1
     ports:
-      - "80:80"
+      - "${FRONTEND_PORT:-80}:80"
   backend:
     build: "./backend"
     restart: always
     environment:
       - PORT=7000
+      - "${BACKEND_PORT:-7000}"
       - IMAGE_DIRECTORY=/media/kaleidoscope
       - FILE_INFO_PATH=/media/songmeta.json
     ports:
-      - "7000:7000"
+      - ${BACKEND_PORT:-7000}:7000"
     volumes:
       - "${MEDIA_VOL:-~/projects/wsg_scraper/image_pool:/media/kaleidoscope/}"
       - "${META_FILE:-~/projects/kaleidoscope/songmeta.json:/media/songmeta.json}"
