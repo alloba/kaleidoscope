@@ -12,8 +12,8 @@ let fileInformationPath = '/projects/kaleidoscope/testinfo.json' //both of these
 
 processStartupArgs();
 const app = express(); 
-app.use(express.json());
-app.use(cors());
+app.use(express.json(), cors());
+// app.use(cors());
 
 const imageService = new ImageService(imageDirectory);
 const fileinfoService = new FileInfoService(fileInformationPath);
@@ -39,7 +39,7 @@ app.get('/image', (req, res) => {
     res.sendFile(imageFullPath)
 });
 
-app.get('/imageList', (req, res) => {
+app.get('/imageList',  (req, res) => {
     const imageList = imageService.getImageList();
     res.setHeader('Cache-Control', 'no-cache')
     res.send(imageList);
