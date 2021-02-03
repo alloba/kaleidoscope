@@ -15,7 +15,7 @@ services:
       - IMAGE_DIRECTORY=/media/kaleidoscope
       - FILE_INFO_PATH=/media/songmeta.json
     ports:
-      - ${BACKEND_PORT:-7000}:7000"
+      - "${BACKEND_PORT:-7000}:7000"
     volumes:
       - "${MEDIA_VOL:-~/projects/wsg_scraper/image_pool:/media/kaleidoscope/}"
       - "${META_FILE:-~/projects/kaleidoscope/songmeta.json:/media/songmeta.json}"
