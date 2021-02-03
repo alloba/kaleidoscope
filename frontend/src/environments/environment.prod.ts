@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  ImageServiceEndpoint: 'http://192.168.1.152:7000/'
+  ImageServiceEndpoint: 'http://kaleidoscope.alexlbates.com:7000/'
 };
