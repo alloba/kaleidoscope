@@ -13,7 +13,7 @@ after_script:
 deploy1:
   stage: deploy
   script:
-    - docker-compose --env-file ./.env.prod -d --build up
+    - docker-compose --env-file .env.prod up -d --build
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
       when: always
