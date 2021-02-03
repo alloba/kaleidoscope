@@ -11,7 +11,7 @@ services:
     build: "./backend"
     restart: always
     environment:
-      - PORT="${BACKEND_PORT:-7000}"
+      - PORT=${BACKEND_PORT:-7000}
       - IMAGE_DIRECTORY=/media/kaleidoscope
       - FILE_INFO_PATH=/media/songmeta.json
     ports:
