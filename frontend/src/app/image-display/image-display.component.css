@@ -11,11 +11,11 @@
     'main main main main'
     'main main main main'
     'main main main main'
-    'tl   mt1  r1   tr  '
-    'bl   mb   mb   br  ';
+    'mb   mb  mb   mb  '
+    'bl   a   a   br  ';
 
   grid-gap: 5px;
-  grid-template-rows: auto auto auto 8em 3em;
+  grid-template-rows: auto auto auto 3em 3em;
   grid-template-columns: 10em 40% auto 10em;
 
 }
