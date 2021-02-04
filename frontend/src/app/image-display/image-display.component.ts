@@ -40,7 +40,7 @@ export class ImageDisplayComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.nativeVideo = this.videoElement.nativeElement;
-    this.nativeVideo.volume = 0.5 //stuff too loud on startup.
+    this.nativeVideo.volume = 0.2 //stuff too loud on startup.
     this.nativeVideo.onloadeddata = () => this.nativeVideo.play()
 
     this.videoElement.nativeElement.addEventListener('ended', () => {

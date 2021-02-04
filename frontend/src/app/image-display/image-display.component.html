@@ -1,15 +1,16 @@
-<div class="image-display-grid-container">
-  <div id="container-area">
-    <div id="video-div">
+<mat-card class="image-display-grid-container">
+  <mat-card-content id="video-div">
+    <div id="container-area">
       <video id="video-tag" #videoElement controls [src]="fileUrl">
         <source type="video/webm" src="">
       </video>
     </div>
-  </div>
+  </mat-card-content>
+</mat-card>
 
-  <button id="load-button-1" (click)="transitionImageBackward()" class="button-styling">Prev</button>
-  <button id="load-button-2" (click)="transitionImageForward()" class="button-styling">Next</button>
+<p id="filename">{{this.currentFilename}}</p>
 
-  <p id="filename">{{this.currentFilename}}</p>
+<div class="button-group">
+  <button mat-button id="load-button-1" (click)="transitionImageBackward()" class="button-styling">Prev</button>
+  <button mat-button id="load-button-2" (click)="transitionImageForward()" class="button-styling">Next</button>
 </div>
-

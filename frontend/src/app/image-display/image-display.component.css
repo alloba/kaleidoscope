@@ -1,62 +1,31 @@
 
 .image-display-grid-container {
-  position: absolute;
-  left: 50%;
-  transform: translate(-50%, 10%);
-  width: 90%;
-  height: 90%;
-
-  display: grid;
-  grid-template-areas:
-    'main main main main'
-    'main main main main'
-    'main main main main'
-    'mb   mb  mb   mb  '
-    'bl   a   a   br  ';
-
-  grid-gap: 5px;
-  grid-template-rows: auto auto auto 3em 3em;
-  grid-template-columns: 10em 40% auto 10em;
-
-}
-
-#video-div {
-  height: 70vh;
-  margin: auto;
+  background: black;
 }
 
 #video-tag {
-  height: 100%;
+  padding-top: 15vh;
   width: 100%;
-}
-
-#load-button-1 {
-  grid-area: bl;
-}
-
-
-#load-button-2 {
-  grid-area: br;
+  height: 50vh;
 }
 
 #filename {
-  grid-area: mb;
-  color: white;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  /*display: flex;*/
+  text-align: center;
 }
 
-
 #container-area {
-  grid-area: main;
+  margin: auto;
+  display: flex;
+  width: 95%;
+}
+
+.button-group {
+  position: absolute;
+  bottom: 1vh;
 }
 
 .button-styling {
-  border: none;
-  color: white;
-  background-color: blueviolet;
-  text-align: center;
-  font-size: 1.5em;
+  color: black;
+  background: #ba89ff;
+  margin-right: 1em;
 }
