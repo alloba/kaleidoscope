@@ -11,12 +11,12 @@ export class ImageService {
 
   private readonly apiUrl: string;
 
-  private images$: ReplaySubject<string[]> = new ReplaySubject<string[]>();
-  private images: string[] = [];
-  public filename$: ReplaySubject<string> = new ReplaySubject<string>()
-  private currentImageIndex: number = 0;
-  public currentImage$: ReplaySubject<Blob> = new ReplaySubject<Blob>();
+  public filename$: ReplaySubject<string> = new ReplaySubject<string>();
+  public filenameUrl$: ReplaySubject<string> = new ReplaySubject<string>();
   public currentImageMeta$: ReplaySubject<FileMeta> = new ReplaySubject<FileMeta>();
+
+  private currentImageIndex: number = 0;
+  private images: string[] = [];
 
   constructor(private httpClient: HttpClient) {
     this.apiUrl = environment.ImageServiceEndpoint
@@ -36,7 +36,6 @@ export class ImageService {
     this.currentImageIndex -= 1;
     if (this.currentImageIndex < 0) {
       this.currentImageIndex = 0;
-      // this.updateCurrentImage(this.images[this.currentImageIndex]);
     } else {
       this.updateCurrentImage(this.images[this.currentImageIndex])
     }
@@ -48,7 +47,6 @@ export class ImageService {
         next: (x) => {
           let shuffleArray = x;
           this.shuffle(shuffleArray);
-          this.images$.next(x);
           this.images = shuffleArray;
 
           this.currentImageIndex = -1; //start at -1 to deal with the increment behavior of next method call.
@@ -58,17 +56,15 @@ export class ImageService {
   }
 
   public updateCurrentImage(filename: string): void {
-    this.getImage(filename)
-      .subscribe({next: x => this.currentImage$.next(x)});
+    this.filename$.next(this.images[this.currentImageIndex])
+    this.filenameUrl$.next(this.getImageUrl(filename));
 
     this.getMetaInfo(filename)
       .subscribe({next: value => this.currentImageMeta$.next(value)})
-
-    this.filename$.next(this.images[this.currentImageIndex])
   }
 
-  public getImage(filename: string): Observable<Blob> {
-    return this.httpClient.get(this.apiUrl + 'image?imageFile=' + filename, {responseType: 'blob'})
+  public getImageUrl(filename: string): string {
+    return this.apiUrl + 'image?imageFile=' + filename
   }
 
   public getMetaInfo(filename: string): Observable<FileMeta> {

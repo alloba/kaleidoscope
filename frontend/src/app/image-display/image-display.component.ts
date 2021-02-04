@@ -1,9 +1,8 @@
 import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {Observable, Subject, Subscription, zip} from 'rxjs';
-import { ImageService } from '../service/image.service';
+import {Subscription, zip} from 'rxjs';
+import {ImageService} from '../service/image.service';
 import {FileMeta} from "../model/file-meta";
-import {mergeAll, zipAll} from "rxjs/operators";
-import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
+import {DomSanitizer} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-image-display',
@@ -14,25 +13,22 @@ export class ImageDisplayComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private subscriptions: Subscription[] = [];
   public metaInfo: FileMeta = new FileMeta();
-  private file: Blob = new Blob();
-  public imageUrl: SafeUrl = '';
+  public fileUrl: string = '';
   public currentFilename = '';
 
   @ViewChild('videoElement')
   public videoElement: ElementRef;
 
-  constructor(private imageService: ImageService, private sanitizer: DomSanitizer) {
+  constructor(private imageService: ImageService) {
     this.videoElement = new ElementRef<any>('');
   }
 
   ngOnInit(): void {
-    const fileInfo$ = zip(this.imageService.currentImage$, this.imageService.currentImageMeta$, this.imageService.filename$).subscribe({
+    const fileInfo$ = zip(this.imageService.filenameUrl$, this.imageService.currentImageMeta$, this.imageService.filename$).subscribe({
       next: value => {
-        this.file = value[0];
+        this.fileUrl = value[0];
         this.metaInfo = value[1];
         this.currentFilename = value[2];
-
-        this.convertImageToUrl(this.file);
       }
     })
 
@@ -54,22 +50,12 @@ export class ImageDisplayComponent implements OnInit, OnDestroy, AfterViewInit {
     this.subscriptions.forEach(x => x.unsubscribe())
   }
 
-  public setPlay() {
-    (this.videoElement.nativeElement as HTMLVideoElement)
-      .load()
-  }
-
   public transitionImageForward(): void {
     this.imageService.loadNextImageInformationSet();
   }
 
   public transitionImageBackward(): void {
     this.imageService.loadPreviousImageInformationSet();
-  }
-
-  private convertImageToUrl(file: Blob) {
-    const unsafeImageUrl = URL.createObjectURL(file);
-    this.imageUrl = this.sanitizer.bypassSecurityTrustResourceUrl(unsafeImageUrl);
   }
 
 }
