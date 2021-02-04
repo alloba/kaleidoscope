@@ -18,9 +18,12 @@ export class ImageDisplayComponent implements OnInit, OnDestroy, AfterViewInit {
 
   @ViewChild('videoElement')
   public videoElement: ElementRef;
+  private nativeVideo: HTMLVideoElement;
 
   constructor(private imageService: ImageService) {
+    //you must work on the native element for actual operations, but for the sake of type-safety, im trying out some mapping logic...
     this.videoElement = new ElementRef<any>('');
+    this.nativeVideo = this.videoElement.nativeElement
   }
 
   ngOnInit(): void {
@@ -36,10 +39,9 @@ export class ImageDisplayComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.videoElement.nativeElement.volume = 0.5 //stuff too loud on startup.
-    this.videoElement.nativeElement.onloadeddata = () => {
-      this.videoElement.nativeElement.play()
-    }
+    this.nativeVideo = this.videoElement.nativeElement;
+    this.nativeVideo.volume = 0.5 //stuff too loud on startup.
+    this.nativeVideo.onloadeddata = () => this.nativeVideo.play()
 
     this.videoElement.nativeElement.addEventListener('ended', () => {
       this.transitionImageForward();
