@@ -4,9 +4,9 @@
 }
 
 #video-tag {
-  padding-top: 15vh;
+  padding-top: 1vh;
   width: 100%;
-  height: 50vh;
+  /*height: 50vh;*/
 }
 
 #filename {
@@ -17,6 +17,7 @@
   margin: auto;
   display: flex;
   width: 95%;
+  height: 80vh;
 }
 
 .button-group {
