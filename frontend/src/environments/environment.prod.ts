@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  ImageServiceEndpoint: 'http://alloba.duckdns.org:7000/'
+  ImageServiceEndpoint: 'http://www.alexlbates.com:7000/'
 };
