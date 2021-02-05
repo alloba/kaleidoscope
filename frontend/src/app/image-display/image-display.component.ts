@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {Subscription, zip} from 'rxjs';
+import {BehaviorSubject, Subject, Subscription, zip} from 'rxjs';
 import {ImageService} from '../service/image.service';
 import {FileMeta} from "../model/file-meta";
 import {DomSanitizer} from "@angular/platform-browser";
@@ -12,9 +12,17 @@ import {DomSanitizer} from "@angular/platform-browser";
 export class ImageDisplayComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private subscriptions: Subscription[] = [];
-  public metaInfo: FileMeta = new FileMeta();
-  public fileUrl: string = '';
-  public currentFilename = '';
+  // public metaInfo: FileMeta = new FileMeta();
+  // public fileUrl: string = '';
+  // public currentFilename = '';
+  // public currentImageIndex = 0;
+  // public currentImageListSize = 0;
+
+  public metaInfo$: BehaviorSubject<FileMeta>;
+  public fileUrl$: BehaviorSubject<string>;
+  public filename$: BehaviorSubject<string>;
+  public imageIndex$: BehaviorSubject<number>;
+  public imageListSize$: BehaviorSubject<number>;
 
   @ViewChild('videoElement')
   public videoElement: ElementRef;
@@ -23,19 +31,16 @@ export class ImageDisplayComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(private imageService: ImageService) {
     //you must work on the native element for actual operations, but for the sake of type-safety, im trying out some mapping logic...
     this.videoElement = new ElementRef<any>('');
-    this.nativeVideo = this.videoElement.nativeElement
+    this.nativeVideo = this.videoElement.nativeElement;
+
+    this.metaInfo$ = this.imageService.currentImageMeta$;
+    this.fileUrl$ = this.imageService.filenameUrl$;
+    this.filename$ = this.imageService.filename$;
+    this.imageIndex$ = this.imageService.imageIndex$;
+    this.imageListSize$ = this.imageService.imageListSize$;
   }
 
   ngOnInit(): void {
-    const fileInfo$ = zip(this.imageService.filenameUrl$, this.imageService.currentImageMeta$, this.imageService.filename$).subscribe({
-      next: value => {
-        this.fileUrl = value[0];
-        this.metaInfo = value[1];
-        this.currentFilename = value[2];
-      }
-    })
-
-    this.subscriptions.push(fileInfo$);
   }
 
   ngAfterViewInit(): void {
@@ -58,6 +63,12 @@ export class ImageDisplayComponent implements OnInit, OnDestroy, AfterViewInit {
 
   public transitionImageBackward(): void {
     this.imageService.loadPreviousImageInformationSet();
+  }
+
+  public getImageUrl(filename: string | null){
+    if(filename == null)
+      return '';
+    return this.imageService.getImageUrl(filename)
   }
 
 }

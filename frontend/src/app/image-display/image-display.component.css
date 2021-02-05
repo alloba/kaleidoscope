@@ -1,4 +1,9 @@
 
+a {
+  color: orange;
+  display: block;
+}
+
 .image-display-grid-container {
   background: black;
 }
@@ -6,11 +11,14 @@
 #video-tag {
   padding-top: 1vh;
   width: 100%;
-  /*height: 50vh;*/
 }
 
 #filename {
-  text-align: center;
+  max-width: 60%;
+  padding-left: 3vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 #container-area {
@@ -20,13 +28,39 @@
   height: 75vh;
 }
 
-.button-group {
-  position: absolute;
+#button-group {
+  right: 0;
   bottom: 1vh;
+  grid-area: right1;
+  position: fixed;
+}
+
+#image-count {
+  right: 1vw;
+  bottom: 5vh;
+  grid-area: right2;
+  position: fixed;
 }
 
 .button-styling {
   color: black;
   background: #ba89ff;
-  margin-right: 1em;
+  margin-right: 4px;
+}
+#bottom-area {
+  width: 100%;
+  display: grid;
+  grid-template-areas:
+    "left1 right1"
+    "left1 right2";
+  grid-template-columns: 60% 40%;
+}
+#tags-area{
+  padding-top: 1vh;
+  grid-area: left1;
+  margin-left: 3vw;;
+}
+.button-1 {
+  margin-right: 2px;
+  margin-bottom: 2px;
 }

@@ -1,6 +1,6 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import {Observable, ReplaySubject} from 'rxjs';
+import {BehaviorSubject, Observable, of, ReplaySubject} from 'rxjs';
 import {environment} from 'src/environments/environment';
 import {FileMeta} from "../model/file-meta";
 
@@ -11,9 +11,11 @@ export class ImageService {
 
   private readonly apiUrl: string;
 
-  public filename$: ReplaySubject<string> = new ReplaySubject<string>();
-  public filenameUrl$: ReplaySubject<string> = new ReplaySubject<string>();
-  public currentImageMeta$: ReplaySubject<FileMeta> = new ReplaySubject<FileMeta>();
+  public filename$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  public filenameUrl$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  public currentImageMeta$: BehaviorSubject<FileMeta> = new BehaviorSubject<FileMeta>(new FileMeta());
+  public imageListSize$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+  public imageIndex$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
 
   private currentImageIndex: number = 0;
   private images: string[] = [];
@@ -48,6 +50,7 @@ export class ImageService {
           let shuffleArray = x;
           this.shuffle(shuffleArray);
           this.images = shuffleArray;
+          this.imageListSize$.next(x.length)
 
           this.currentImageIndex = -1; //start at -1 to deal with the increment behavior of next method call.
           this.loadNextImageInformationSet();
@@ -58,6 +61,7 @@ export class ImageService {
   public updateCurrentImage(filename: string): void {
     this.filename$.next(this.images[this.currentImageIndex])
     this.filenameUrl$.next(this.getImageUrl(filename));
+    this.imageIndex$.next(this.currentImageIndex);
 
     this.getMetaInfo(filename)
       .subscribe({next: value => this.currentImageMeta$.next(value)})
@@ -68,7 +72,10 @@ export class ImageService {
   }
 
   public getMetaInfo(filename: string): Observable<FileMeta> {
-    return this.httpClient.get<FileMeta>(this.apiUrl + 'fileinfo/' + filename);
+    // return this.httpClient.get<FileMeta>(this.apiUrl + 'fileinfo/' + filename);
+    let meta = new FileMeta();
+    meta.tags = ['1asdfasdf', 'asdf', 'vczz', 'aaaaa']
+    return of(meta)
   }
 
   /**

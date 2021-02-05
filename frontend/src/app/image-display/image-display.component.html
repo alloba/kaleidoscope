@@ -1,16 +1,24 @@
 <mat-card class="image-display-grid-container">
   <mat-card-content id="video-div">
     <div id="container-area">
-      <video id="video-tag" #videoElement controls [src]="fileUrl">
+      <video id="video-tag" #videoElement controls [src]="fileUrl$ | async">
         <source type="video/webm" src="">
       </video>
     </div>
   </mat-card-content>
 </mat-card>
 
-<p id="filename">{{this.currentFilename}}</p>
+<a href="{{this.getImageUrl((filename$ | async)!)}}" id="filename">{{filename$ | async}}</a>
 
-<div class="button-group">
-  <button mat-button id="load-button-1" (click)="transitionImageBackward()" class="button-styling">Prev</button>
-  <button mat-button id="load-button-2" (click)="transitionImageForward()" class="button-styling">Next</button>
+<div id="bottom-area">
+  <div id="tags-area">
+<!--    <p *ngFor="let tag of (metaInfo$ | async).tags">{{tag}}</p>-->
+  </div>
+  <div id="button-group">
+    <button mat-button id="load-button-1" (click)="transitionImageBackward()" class="button-styling button-1">Prev</button>
+    <button mat-button id="load-button-2" (click)="transitionImageForward()" class="button-styling">Next</button>
+  </div>
+  <div></div>
+  <p id="image-count">{{(imageIndex$ | async)! + 1}} of {{(imageListSize$ | async)! + 1}}</p>
 </div>
+
