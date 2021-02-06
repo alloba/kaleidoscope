@@ -39,11 +39,17 @@ app.get('/image', (req, res) => {
     res.sendFile(imageFullPath)
 });
 
-app.get('/imageList',  cors(), (req, res) => {
+app.get('/imageList', (req, res) => {
     const imageList = imageService.getImageList();
     res.setHeader('Cache-Control', 'no-cache')
     res.send(imageList);
 });
+
+app.get('/allTags', (req, res) => {
+    const allTags = fileinfoService.getAllTags();
+    res.setHeader('Cache-Control', 'no-cache');
+    res.send(allTags)
+})
 
 app.get('/favicon.ico', (req, res) => {
     res.status(204);
