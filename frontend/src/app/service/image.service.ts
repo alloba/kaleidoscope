@@ -3,7 +3,6 @@ import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable, of, pipe, ReplaySubject} from 'rxjs';
 import {environment} from 'src/environments/environment';
 import {FileMeta} from "../model/file-meta";
-import {tap} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
@@ -75,7 +74,8 @@ export class ImageService {
   }
 
   public getMetaInfo(filename: string): Observable<FileMeta> {
-    return this.httpClient.get<FileMeta>(this.apiUrl + 'fileinfo/' + filename);
+    // return this.httpClient.get<FileMeta>(this.apiUrl + 'fileinfo/' + filename);
+    return of (new FileMeta())
     // let meta = new FileMeta();
     // meta.tags = ['1asdfasdf', 'asdf', 'vczz', 'aaaaa']
     // return of(meta)
