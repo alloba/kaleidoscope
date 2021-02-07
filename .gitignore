@@ -1,6 +1,13 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
 # compiled output
+
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+backend/**/src/main/**/target/
+backend/**/src/test/**/target/
+
+
 /frontend/dist
 /frontend/tmp
 /frontend/out-tsc
