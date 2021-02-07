@@ -17,7 +17,7 @@ public class KaleidoscopeBackendApplication {
 		return new WebMvcConfigurer() {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/greeting-javaconfig").allowedOrigins("http://localhost:8080");
+				registry.addMapping("/**");
 			}
 		};
 	}
