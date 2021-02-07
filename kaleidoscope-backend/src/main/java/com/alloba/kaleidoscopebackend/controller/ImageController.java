@@ -2,18 +2,16 @@ package com.alloba.kaleidoscopebackend.controller;
 
 import com.alloba.kaleidoscopebackend.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.nio.file.Files;
 import java.util.List;
 
 @RestController
@@ -33,14 +31,13 @@ public class ImageController {
     }
 
     @GetMapping("image")
-    public ResponseEntity<StreamingResponseBody> getImage(@RequestParam("imageFile") String imageFile) throws FileNotFoundException {
+    public ResponseEntity<FileSystemResource> getImage(@RequestParam("imageFile") String imageFile) throws FileNotFoundException {
         String filePath = imageService.getImagePath(imageFile);
-        StreamingResponseBody stream = out -> Files.copy(new File(filePath).toPath(), out);
 
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.parseMediaType("video/webm"))
-                .body(stream);
+                .body(new FileSystemResource(new File(filePath)));
     }
 
     @GetMapping("imageList")
