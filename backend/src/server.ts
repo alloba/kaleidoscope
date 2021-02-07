@@ -17,7 +17,9 @@ app.use(express.json());
 
 const imageService = new ImageService(imageDirectory);
 const fileinfoService = new FileInfoService(fileInformationPath);
-
+/**
+ * TODO: The desire to blow this away and do a java version increases as i experience build issues.... but also ive been drinking so maybe im missing something obvious
+ */
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../' + 'webpage/index.html'));
 });
@@ -75,6 +77,7 @@ app.get('/fileinfo/:filename', (req, res) => {
 
 app.get('/reloadinfo', (req, res) => {
     fileinfoService.reloadInfoFile();
+    imageService.reload();
     res.status(200);
     res.send('reloaded');
 })

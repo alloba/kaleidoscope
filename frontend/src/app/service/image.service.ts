@@ -1,8 +1,9 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable, of, ReplaySubject} from 'rxjs';
+import {BehaviorSubject, Observable, of, pipe, ReplaySubject} from 'rxjs';
 import {environment} from 'src/environments/environment';
 import {FileMeta} from "../model/file-meta";
+import {tap} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +17,7 @@ export class ImageService {
   public currentImageMeta$: BehaviorSubject<FileMeta> = new BehaviorSubject<FileMeta>(new FileMeta());
   public imageListSize$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
   public imageIndex$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+  public allTags$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
 
   private currentImageIndex: number = 0;
   private images: string[] = [];
@@ -23,6 +25,7 @@ export class ImageService {
   constructor(private httpClient: HttpClient) {
     this.apiUrl = environment.ImageServiceEndpoint
     this.refreshImageList();
+    this.loadAllImageTags();
   }
 
   public loadNextImageInformationSet(): void {
@@ -72,10 +75,18 @@ export class ImageService {
   }
 
   public getMetaInfo(filename: string): Observable<FileMeta> {
-    // return this.httpClient.get<FileMeta>(this.apiUrl + 'fileinfo/' + filename);
-    let meta = new FileMeta();
-    meta.tags = ['1asdfasdf', 'asdf', 'vczz', 'aaaaa']
-    return of(meta)
+    return this.httpClient.get<FileMeta>(this.apiUrl + 'fileinfo/' + filename);
+    // let meta = new FileMeta();
+    // meta.tags = ['1asdfasdf', 'asdf', 'vczz', 'aaaaa']
+    // return of(meta)
+  }
+
+  public loadAllImageTags(): void {
+    this.httpClient.get<string[]>(this.apiUrl + 'allTags')
+      .subscribe(x => {
+        console.log(x)
+        this.allTags$.next(x)
+      })
   }
 
   /**
