@@ -82,11 +82,12 @@ export class ImageService {
   }
 
   public loadAllImageTags(): void {
-    this.httpClient.get<string[]>(this.apiUrl + 'allTags')
-      .subscribe(x => {
-        console.log(x)
-        this.allTags$.next(x)
-      })
+    // this.httpClient.get<string[]>(this.apiUrl + 'allTags')
+    //   .subscribe(x => {
+    //     console.log(x)
+    //     this.allTags$.next(x)
+    //   })
+    this.allTags$.next([]);
   }
 
   /**
