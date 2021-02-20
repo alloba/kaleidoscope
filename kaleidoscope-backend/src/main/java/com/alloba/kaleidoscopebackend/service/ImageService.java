@@ -17,10 +17,12 @@ import java.util.stream.Collectors;
 public class ImageService {
 
     private List<String> staticBag;
-    private final File imageDirectoryObject;
+    private File imageDirectoryObject;
+    private final PropertiesDefault properties;
 
     @Autowired
     public ImageService(PropertiesDefault properties){
+        this.properties = properties;
         this.imageDirectoryObject = new File(properties.imageDirectory());
         this.staticBag = Arrays.stream(Objects.requireNonNull(imageDirectoryObject.listFiles()))
                 .map(File::getName)
@@ -47,6 +49,13 @@ public class ImageService {
             throw new RuntimeException("more than one matching file found, this should be impossible.");
         }
         else return imageList[0].getAbsolutePath();
+    }
+
+    public void reloadBag() {
+        this.imageDirectoryObject = new File(properties.imageDirectory());
+        this.staticBag = Arrays.stream(Objects.requireNonNull(imageDirectoryObject.listFiles()))
+                .map(File::getName)
+                .collect(Collectors.toList());
     }
 
     public List<String> getImageList() {

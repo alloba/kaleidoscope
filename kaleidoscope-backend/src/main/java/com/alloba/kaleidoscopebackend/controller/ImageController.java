@@ -44,6 +44,12 @@ public class ImageController {
     public ResponseEntity<List<String>> getImageList() {
         return ResponseEntity.ok(imageService.getImageList());
     }
+
+    @GetMapping("refresh")
+    public ResponseEntity<String> refreshImageList() {
+        imageService.reloadBag();
+        return ResponseEntity.ok("reloaded");
+    }
     //TODO: put these in a meta info controller
 //    allTags
 //    /fileinfo/:filename
