@@ -5,13 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.List;
 
 @RestController
@@ -31,7 +27,7 @@ public class ImageController {
     }
 
     @GetMapping("image")
-    public ResponseEntity<FileSystemResource> getImage(@RequestParam("imageFile") String imageFile) throws FileNotFoundException {
+    public ResponseEntity<FileSystemResource> getImage(@RequestParam("imageFile") String imageFile) {
         String filePath = imageService.getImagePath(imageFile);
 
         return ResponseEntity
@@ -43,6 +39,20 @@ public class ImageController {
     @GetMapping("imageList")
     public ResponseEntity<List<String>> getImageList() {
         return ResponseEntity.ok(imageService.getImageList());
+    }
+
+    @GetMapping("available-direcotires")
+    public ResponseEntity<List<String>> getAvailableImageDirectories(){
+        return ResponseEntity
+                .ok()
+                .body(imageService.getAvailableImageDirectories());
+    }
+
+    @PostMapping("change-directory")
+    public ResponseEntity<String> changeImageDirectory(@RequestBody String directoryPath){
+        imageService.changeImageDirectory(directoryPath);
+        return ResponseEntity
+                .ok("Success");
     }
 
     @GetMapping("refresh")

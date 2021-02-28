@@ -2,8 +2,6 @@ package com.alloba.kaleidoscopebackend.service;
 
 import com.alloba.kaleidoscopebackend.PropertiesDefault;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -25,9 +23,10 @@ public class ImageService {
         this.properties = properties;
         this.imageDirectoryObject = new File(properties.imageDirectory());
         this.staticBag = Arrays.stream(Objects.requireNonNull(imageDirectoryObject.listFiles()))
+                .filter(File::isFile)
                 .map(File::getName)
+                .filter(name -> name.endsWith(".webm"))
                 .collect(Collectors.toList());
-        System.out.println(properties.imageDirectory());
     }
 
     public String getRandomImageName() {
@@ -60,5 +59,21 @@ public class ImageService {
 
     public List<String> getImageList() {
         return staticBag;
+    }
+
+    public List<String> getAvailableImageDirectories() {
+        return Arrays.stream(Objects.requireNonNull(new File(properties.imageDirectory()).listFiles()))
+                .filter(File::isDirectory)
+                .map(File::getAbsolutePath)
+                .collect(Collectors.toList());
+    }
+
+    public void changeImageDirectory(String directoryPath) {
+        this.imageDirectoryObject = new File(directoryPath);
+        this.staticBag = Arrays.stream(Objects.requireNonNull(imageDirectoryObject.listFiles()))
+                .filter(File::isFile)
+                .map(File::getName)
+                .filter(name -> name.endsWith(".webm"))
+                .collect(Collectors.toList());
     }
 }
