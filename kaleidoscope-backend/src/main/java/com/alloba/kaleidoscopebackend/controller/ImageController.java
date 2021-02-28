@@ -41,7 +41,7 @@ public class ImageController {
         return ResponseEntity.ok(imageService.getImageList());
     }
 
-    @GetMapping("available-direcotires")
+    @GetMapping("available-directories")
     public ResponseEntity<List<String>> getAvailableImageDirectories(){
         return ResponseEntity
                 .ok()
