@@ -16,7 +16,8 @@ export class ImageService {
   public currentImageMeta$: BehaviorSubject<FileMeta> = new BehaviorSubject<FileMeta>(new FileMeta());
   public imageListSize$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
   public imageIndex$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
-  public allTags$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>([]);
+  public directoryList$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>(['/']);
+  public subDirectory = '';
 
   private currentImageIndex: number = 0;
   private images: string[] = [];
@@ -24,7 +25,7 @@ export class ImageService {
   constructor(private httpClient: HttpClient) {
     this.apiUrl = environment.ImageServiceEndpoint
     this.refreshImageList();
-    this.loadAllImageTags();
+    this.loadDirectoryList();
   }
 
   public loadNextImageInformationSet(): void {
@@ -46,7 +47,7 @@ export class ImageService {
   }
 
   public refreshImageList(): void {
-    this.httpClient.get<[string]>(this.apiUrl + 'imageList')
+    this.httpClient.get<[string]>(this.apiUrl + 'imageList' + '?subDir=' + this.subDirectory)
       .subscribe({
         next: (x) => {
           let shuffleArray = x;
@@ -62,32 +63,22 @@ export class ImageService {
 
   public updateCurrentImage(filename: string): void {
     this.filename$.next(this.images[this.currentImageIndex])
-    this.filenameUrl$.next(this.getImageUrl(filename));
+    this.filenameUrl$.next(this.getImageUrl(filename, this.subDirectory));
     this.imageIndex$.next(this.currentImageIndex);
-
-    this.getMetaInfo(filename)
-      .subscribe({next: value => this.currentImageMeta$.next(value)})
   }
 
-  public getImageUrl(filename: string): string {
-    return this.apiUrl + 'image?imageFile=' + filename
+  public getImageUrl(filename: string, subdir: string): string {
+    return this.apiUrl + 'image?imageFile=' + filename + '&subdir=' + subdir
   }
 
-  public getMetaInfo(filename: string): Observable<FileMeta> {
-    // return this.httpClient.get<FileMeta>(this.apiUrl + 'fileinfo/' + filename);
-    return of (new FileMeta())
-    // let meta = new FileMeta();
-    // meta.tags = ['1asdfasdf', 'asdf', 'vczz', 'aaaaa']
-    // return of(meta)
-  }
-
-  public loadAllImageTags(): void {
-    // this.httpClient.get<string[]>(this.apiUrl + 'allTags')
-    //   .subscribe(x => {
-    //     console.log(x)
-    //     this.allTags$.next(x)
-    //   })
-    this.allTags$.next([]);
+  public loadDirectoryList(): void {
+    this.httpClient.get<string[]>(this.apiUrl + 'available-directories')
+      .subscribe({
+        next: resp => {
+          console.log('found directories: ', resp)
+          this.directoryList$.next(resp)
+        }
+      })
   }
 
   /**
@@ -101,5 +92,10 @@ export class ImageService {
       const j = Math.floor(Math.random() * (i + 1));
       [array[i], array[j]] = [array[j], array[i]];
     }
+  }
+
+  changeSubDir(dir: string) {
+    this.subDirectory = dir;
+    this.refreshImageList();
   }
 }

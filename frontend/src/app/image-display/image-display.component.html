@@ -18,7 +18,15 @@
     <button mat-button id="load-button-1" (click)="transitionImageBackward()" class="button-styling button-1">Prev</button>
     <button mat-button id="load-button-2" (click)="transitionImageForward()" class="button-styling">Next</button>
   </div>
-  <div></div>
-  <p id="image-count">{{(imageIndex$ | async)! + 1}} of {{(imageListSize$ | async)! + 1}}</p>
+  <div>
+    <p>Directories: </p>
+    <div *ngFor="let dir of (directoryList$ | async)">
+      <label>
+        {{dir}}
+        <input type="radio" name="directory-selector" value="{{dir}}" (change)="setSubDirectory(dir)">
+      </label>
+    </div>
+  </div>
+  <p id="image-count">{{(imageIndex$ | async)! + 1}} of {{(imageListSize$ | async)!}}</p>
 </div>
 

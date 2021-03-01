@@ -11,18 +11,12 @@ import {DomSanitizer} from "@angular/platform-browser";
 })
 export class ImageDisplayComponent implements OnInit, OnDestroy, AfterViewInit {
 
-  private subscriptions: Subscription[] = [];
-  // public metaInfo: FileMeta = new FileMeta();
-  // public fileUrl: string = '';
-  // public currentFilename = '';
-  // public currentImageIndex = 0;
-  // public currentImageListSize = 0;
-
   public metaInfo$: BehaviorSubject<FileMeta>;
   public fileUrl$: BehaviorSubject<string>;
   public filename$: BehaviorSubject<string>;
   public imageIndex$: BehaviorSubject<number>;
   public imageListSize$: BehaviorSubject<number>;
+  public directoryList$: BehaviorSubject<string[]>
 
   @ViewChild('videoElement')
   public videoElement: ElementRef;
@@ -38,6 +32,7 @@ export class ImageDisplayComponent implements OnInit, OnDestroy, AfterViewInit {
     this.filename$ = this.imageService.filename$;
     this.imageIndex$ = this.imageService.imageIndex$;
     this.imageListSize$ = this.imageService.imageListSize$;
+    this.directoryList$ = this.imageService.directoryList$;
   }
 
   ngOnInit(): void {
@@ -54,7 +49,6 @@ export class ImageDisplayComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.forEach(x => x.unsubscribe())
   }
 
   public transitionImageForward(): void {
@@ -68,7 +62,10 @@ export class ImageDisplayComponent implements OnInit, OnDestroy, AfterViewInit {
   public getImageUrl(filename: string | null){
     if(filename == null)
       return '';
-    return this.imageService.getImageUrl(filename)
+    return this.imageService.getImageUrl(filename, this.imageService.subDirectory)
   }
 
+  public setSubDirectory(dir: string) {
+    this.imageService.changeSubDir(dir)
+  }
 }

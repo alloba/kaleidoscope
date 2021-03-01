@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/")
@@ -27,8 +28,9 @@ public class ImageController {
     }
 
     @GetMapping("image")
-    public ResponseEntity<FileSystemResource> getImage(@RequestParam("imageFile") String imageFile) {
-        String filePath = imageService.getImagePath(imageFile);
+    public ResponseEntity<FileSystemResource> getImage(@RequestParam("imageFile") String imageFile, @RequestParam("subdir") Optional<String> subDir) {
+        String subDirectory = subDir.orElse("");
+        String filePath = imageService.getImagePath(imageFile, subDirectory);
 
         return ResponseEntity
                 .ok()
@@ -37,8 +39,13 @@ public class ImageController {
     }
 
     @GetMapping("imageList")
-    public ResponseEntity<List<String>> getImageList() {
-        return ResponseEntity.ok(imageService.getImageList());
+    public ResponseEntity<List<String>> getImageList(@RequestParam("subDir") Optional<String> subdirectory) {
+        List<String> imageList;
+        if(subdirectory.isPresent())
+            imageList = imageService.getImageList(subdirectory.get());
+        else
+            imageList = imageService.getImageList();
+        return ResponseEntity.ok(imageList);
     }
 
     @GetMapping("available-directories")
@@ -46,13 +53,6 @@ public class ImageController {
         return ResponseEntity
                 .ok()
                 .body(imageService.getAvailableImageDirectories());
-    }
-
-    @PostMapping("change-directory")
-    public ResponseEntity<String> changeImageDirectory(@RequestBody String directoryPath){
-        imageService.changeImageDirectory(directoryPath);
-        return ResponseEntity
-                .ok("Success");
     }
 
     @GetMapping("refresh")
