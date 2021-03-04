@@ -21,6 +21,11 @@ a {
   white-space: nowrap;
 }
 
+#dir-area {
+  padding-top: 1em;
+  padding-left: 3vw;
+}
+
 #container-area {
   margin: auto;
   display: flex;
