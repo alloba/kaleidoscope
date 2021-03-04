@@ -8,8 +8,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/")
@@ -23,29 +26,31 @@ public class ImageController {
     }
 
     @GetMapping("randomImage")
-    public ResponseEntity<String> randomImage() {
-        return ResponseEntity.ok(imageService.getRandomImageName());
-    }
-
-    @GetMapping("image")
-    public ResponseEntity<FileSystemResource> getImage(@RequestParam("imageFile") String imageFile, @RequestParam("subdir") Optional<String> subDir) {
-        String subDirectory = subDir.orElse("");
-        String filePath = imageService.getImagePath(imageFile, subDirectory);
-
+    public ResponseEntity<FileSystemResource> randomImage() {
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.parseMediaType("video/webm"))
-                .body(new FileSystemResource(new File(filePath)));
+                .body(new FileSystemResource(imageService.getRandomImageName()));
+    }
+
+    @GetMapping("image")
+    public ResponseEntity<FileSystemResource> getImage(@RequestParam("imageFile") String imageFile) {
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.parseMediaType("video/webm"))
+                .body(new FileSystemResource(imageService.getImageFile(imageFile)));
     }
 
     @GetMapping("imageList")
-    public ResponseEntity<List<String>> getImageList(@RequestParam("subDir") Optional<String> subdirectory) {
+    public ResponseEntity<List<String>> getImageList(@RequestParam("subDir") Optional<String> subDir) {
         List<String> imageList;
-        if(subdirectory.isPresent())
-            imageList = imageService.getImageList(subdirectory.get());
-        else
+
+        if(subDir.isEmpty())
             imageList = imageService.getImageList();
-        return ResponseEntity.ok(imageList);
+        else
+            imageList = imageService.getImageList(subDir.get());
+
+        return ResponseEntity.ok(imageService.urlEncodeFileList(imageList));
     }
 
     @GetMapping("available-directories")
@@ -60,10 +65,4 @@ public class ImageController {
         imageService.reloadBag();
         return ResponseEntity.ok("reloaded");
     }
-    //TODO: put these in a meta info controller
-//    allTags
-//    /fileinfo/:filename
-//    reloadinfo
-//    saveinfo
-//    /updateFileInfo/:filename
 }

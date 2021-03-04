@@ -5,82 +5,83 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class ImageService {
 
-    private List<String> staticBag;
-    private File imageDirectoryObject;
+    private final File baseImageDirectory;
     private final PropertiesDefault properties;
+
+    private List<String> loadedImageList;
 
     @Autowired
     public ImageService(PropertiesDefault properties){
         this.properties = properties;
-        this.imageDirectoryObject = new File(properties.imageDirectory());
-        this.staticBag = Arrays.stream(Objects.requireNonNull(imageDirectoryObject.listFiles()))
-                .filter(File::isFile)
-                .map(File::getName)
-                .filter(name -> name.endsWith(".webm"))
+        this.baseImageDirectory = new File(properties.imageDirectory());
+        this.reloadBag();
+    }
+
+    public List<File> getNestedFiles(File directory){
+        if(directory.isFile() || directory.listFiles() == null){
+            return Collections.emptyList();
+        }
+        List<File> files = Arrays.stream(Objects.requireNonNull(directory.listFiles())).filter(File::isFile).collect(Collectors.toList());
+        List<File> subDirectories =Arrays.stream(Objects.requireNonNull(directory.listFiles())).filter(File::isDirectory).collect(Collectors.toList());
+        for(File subDir : subDirectories){
+            files.addAll(getNestedFiles(subDir));
+        }
+        return files;
+    }
+
+    public List<String> convertFilesToRelativePath(File baseDirectory, List<File> subFiles){
+        String basePath = baseDirectory.getAbsolutePath();
+        return subFiles.stream()
+                .map(x -> x.getAbsolutePath().substring(basePath.length())) // +1 removes the front /
                 .collect(Collectors.toList());
     }
 
-    public String getRandomImageName() {
+    public File getRandomImageName() {
         Random random = new Random();
-        if(staticBag.size() == 0)
-            return "";
+        if(loadedImageList.size() == 0)
+            return null;
         else
-            return staticBag.get(random.nextInt(staticBag.size()));
+            return new File(this.baseImageDirectory.getAbsolutePath() + loadedImageList.get(random.nextInt(loadedImageList.size())));
     }
 
-    public String getImagePath(String imageFile, String subDir) {
-        File[] imageList = new File(imageDirectoryObject.getPath() + "/" + subDir).listFiles((dir, name) -> name.equals(imageFile));
-        if(imageList == null){
-            return "";
-        }
-        if(imageList.length > 1){
-            throw new RuntimeException("more than one matching file found, this should be impossible.");
-        }
-        if(imageList.length == 0){
-            return "";
-        }
-        else return imageList[0].getAbsolutePath();
+    public File getImageFile(String imageFile) {
+        File file = new File(this.baseImageDirectory + imageFile);
+        if(!file.isFile())
+            throw new RuntimeException("File Not Found");
+        else return file;
     }
 
     public void reloadBag() {
-        this.imageDirectoryObject = new File(properties.imageDirectory());
-        this.staticBag = Arrays.stream(Objects.requireNonNull(imageDirectoryObject.listFiles()))
-                .map(File::getName)
-                .collect(Collectors.toList());
+        this.loadedImageList = convertFilesToRelativePath(this.baseImageDirectory, getNestedFiles(this.baseImageDirectory));
     }
 
     public List<String> getImageList() {
-        return staticBag;
+        return loadedImageList;
     }
 
-    public List<String> getImageList(String subdirectory) {
-        File subdir = new File(properties.imageDirectory() + "/" + subdirectory);
-
-        return Arrays.stream(Objects.requireNonNull(subdir.listFiles()))
-                .filter(File::isFile)
-                .map(File::getName)
-                .filter(name -> name.endsWith(".webm"))
-                .collect(Collectors.toList());
+    public List<String> getImageList(String subdir){
+        return this.loadedImageList.stream().filter(x -> x.startsWith(subdir)).collect(Collectors.toList());
     }
 
     public List<String> getAvailableImageDirectories() {
-        List<String> dirList = new ArrayList<>();
-        dirList.add("/");
-
-        List<String> remainder = Arrays.stream(Objects.requireNonNull(new File(properties.imageDirectory()).listFiles()))
+        List<String> dirList = Arrays.stream(Objects.requireNonNull(new File(properties.imageDirectory()).listFiles()))
                 .filter(File::isDirectory)
-                .map(File::getName)
+                .map(x -> File.separator + x.getName())
                 .collect(Collectors.toList());
 
-        dirList.addAll(remainder);
-        System.out.println("found directories: ");
-        System.out.println(dirList.toString());
+        dirList.add(File.separator);
         return dirList;
+    }
+
+    public List<String> urlEncodeFileList(List<String> filePaths){
+        return filePaths.stream().map(image -> URLEncoder.encode(image, StandardCharsets.UTF_8)).collect(Collectors.toList());
     }
 }
