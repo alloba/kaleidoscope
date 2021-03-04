@@ -62,7 +62,7 @@ export class ImageDisplayComponent implements OnInit, OnDestroy, AfterViewInit {
   public getImageUrl(filename: string | null){
     if(filename == null)
       return '';
-    return this.imageService.getImageUrl(filename, this.imageService.subDirectory)
+    return this.imageService.getImageUrl(filename)
   }
 
   public setSubDirectory(dir: string) {
