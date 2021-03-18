@@ -1,25 +1,43 @@
+#https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/quickref-s3.html
+AWSTemplateFormatVersion: 2010-09-09
+Metadata:
+  'AWS::CloudFormation::Designer':
+    3877c396-710b-4c4d-897e-3932a42d75ed:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 430
+        'y': 160
+      z: 0
+      embeds: []
+Parameters:
+  BucketNamed:
+    Type: String
+    Default: kaleidoscope-frontend
+    Description: name for created s3 bucket.
 Resources:
-  FrontendS3Bucket:
-    Type: AWS::S3::Bucket
-    DeletionPolicy: Retain
+  FrontendBucket:
+    Type: 'AWS::S3::Bucket'
     Properties:
-      BucketName: kaleidoscope.alexlbates.com
+      BucketName: !Ref BucketNamed
       AccessControl: PublicRead
-      MetricsConfigurations:
-        - Id: EntireBucket
       WebsiteConfiguration:
         IndexDocument: index.html
-
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 3877c396-710b-4c4d-897e-3932a42d75ed
 Outputs:
-  WebsiteUrl:
+  WebsiteURL:
     Value: !GetAtt
-      - FrontendS3Bucket
-      - WebsiteUrl
+      - FrontendBucket
+      - WebsiteURL
     Description: URL for website hosted on S3
-  Value: !Join
-    - ''
-    - - 'https://'
-      - !GetAtt
-        - FrontendS3Bucket
-        - DomainName # i think this is just provided in context...
-  Description: 'Name of S3 bucket to hold website content'
+  S3BucketSecureURL:
+    Value: !Join
+      - ''
+      - - 'https://'
+        - !GetAtt
+          - FrontendBucket
+          - DomainName
+    Description: Name of S3 bucket to hold website content

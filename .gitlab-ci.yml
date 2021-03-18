@@ -1,7 +1,13 @@
 # This file is a template, and might need editing before it works on your project.
 # see https://docs.gitlab.com/ee/ci/yaml/README.html for all available options
 
-# you can delete this line if you're not using Docker
+variables:
+  AWS_ACCESS_KEY_ID: '$AWS_ACCESS_KEY_ID'
+  AWS_SECRET_ACCESS_KEY: '$AWS_SECRET_ACCESS_KEY'
+  AWS_REGION: 'AWS_DEFAULT_REGION'
+  STACK_NAME: 'kaleidoscope-frontend'
+
+
 image: busybox:latest
 
 before_script:
@@ -9,11 +15,35 @@ before_script:
 
 after_script:
   - echo "Completed Build/Deploy"
+#
+#deploy1:
+#  stage: deploy
+#  script:
+#    - docker-compose --env-file .env.prod up -d --build
+#  rules:
+#    - if: '$CI_COMMIT_BRANCH == "master"'
+#      when: always
 
-deploy1:
-  stage: deploy
+build2:
+  stage: build
+  image: node:current-alpine3.10
   script:
-    - docker-compose --env-file .env.prod up -d --build
+    - npm run-script --prefix frontend build
+  artifacts:
+    paths:
+      - frontend/dist/kaleidoscope-frontend
+
+
+deploy2:
+  stage: deploy
+  image: python:latest
+  before_script:
+    - pip install awscli
+  script:
+    - aws cloudformation deploy --template-file ./frontend-deploy.cft.yml --stack-name $STACK_NAME #credentials implicit via global variables???
+    - aws s3 cp frontend/dist/kaleidoscope-frontend/ s3://${STACK_NAME} --recusive --acl public-read
+  needs:
+    - build1
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
       when: always
