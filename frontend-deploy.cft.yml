@@ -1,0 +1,25 @@
+Resources:
+  FrontendS3Bucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties:
+      BucketName: kaleidoscope.alexlbates.com
+      AccessControl: PublicRead
+      MetricsConfigurations:
+        - Id: EntireBucket
+      WebsiteConfiguration:
+        IndexDocument: index.html
+
+Outputs:
+  WebsiteUrl:
+    Value: !GetAtt
+      - FrontendS3Bucket
+      - WebsiteUrl
+    Description: URL for website hosted on S3
+  Value: !Join
+    - ''
+    - - 'https://'
+      - !GetAtt
+        - FrontendS3Bucket
+        - DomainName # i think this is just provided in context...
+  Description: 'Name of S3 bucket to hold website content'
