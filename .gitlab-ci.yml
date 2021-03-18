@@ -45,7 +45,7 @@ deploy2:
   script:
     - aws cloudformation deploy --no-fail-on-empty-changeset --template-file ./media-storage.cft.yml --stack-name $STACK_NAME_MEDIA
     - aws cloudformation deploy --no-fail-on-empty-changeset --template-file ./frontend-deploy.cft.yml --stack-name $STACK_NAME_FRONTEND #credentials implicit via global variables???
-    - aws s3 cp frontend/dist/kaleidoscope-frontend/ s3://${STACK_NAME} --recursive --acl public-read
+    - aws s3 cp frontend/dist/kaleidoscope-frontend/ s3://${$STACK_NAME_FRONTEND} --recursive --acl public-read
   needs:
     - build2
   rules:
