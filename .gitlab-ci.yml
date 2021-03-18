@@ -44,7 +44,6 @@ deploy2:
   script:
     - aws cloudformation deploy --template-file ./frontend-deploy.cft.yml --stack-name $STACK_NAME #credentials implicit via global variables???
     - aws s3 cp frontend/dist/kaleidoscope-frontend/ s3://${STACK_NAME} --recusive --acl public-read
-    - echo "done??"
   needs:
     - build2
   rules:
