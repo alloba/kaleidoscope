@@ -28,7 +28,9 @@ build2:
   stage: build
   image: node:current-alpine3.10
   script:
-    - npm run-script --prefix frontend build
+    - cd frontend
+    - npm install-ci
+    - npm run-script build
   artifacts:
     paths:
       - frontend/dist/kaleidoscope-frontend
