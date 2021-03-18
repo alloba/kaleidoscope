@@ -1,8 +1,7 @@
-import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {BehaviorSubject, Subject, Subscription, zip} from 'rxjs';
+import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {BehaviorSubject} from 'rxjs';
 import {ImageService} from '../service/image.service';
 import {FileMeta} from "../model/file-meta";
-import {DomSanitizer} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-image-display',
@@ -22,7 +21,7 @@ export class ImageDisplayComponent implements OnInit, OnDestroy, AfterViewInit {
   public videoElement: ElementRef;
   private nativeVideo: HTMLVideoElement;
 
-  constructor(private imageService: ImageService) {
+  constructor(private imageService: ImageService, private changeRef: ChangeDetectorRef) {
     //you must work on the native element for actual operations, but for the sake of type-safety, im trying out some mapping logic...
     this.videoElement = new ElementRef<any>('');
     this.nativeVideo = this.videoElement.nativeElement;
@@ -46,6 +45,37 @@ export class ImageDisplayComponent implements OnInit, OnDestroy, AfterViewInit {
     this.videoElement.nativeElement.addEventListener('ended', () => {
       this.transitionImageForward();
     });
+
+   /* These controls are for picture-in-picture functionality.
+      Angular doesnt support mediaSession type automatically (read: conveniently). So we're going bog-standard script + ts-ignore for this.
+
+      Manual change detection is required here due to operating outside of an angular context (inside action handlers),
+        otherwise the target file will update in memory, but the page itself will not reflect the change.
+    */
+    if('mediaSession' in navigator){
+      // @ts-ignore
+      navigator.mediaSession.setActionHandler('previoustrack', () => {
+        this.transitionImageBackward()
+        this.changeRef.detectChanges();
+      });
+      // @ts-ignore
+      navigator.mediaSession.setActionHandler('nexttrack', () => {
+        this.transitionImageForward()
+        this.changeRef.detectChanges();
+      });
+
+      // @ts-ignore
+      navigator.mediaSession.setActionHandler('play', () => {
+        this.videoElement.nativeElement.play();
+      });
+
+      // @ts-ignore
+      navigator.mediaSession.setActionHandler('pause', () => {
+        this.videoElement.nativeElement.pause();
+      });
+    }
+
+    this.filename$.subscribe(x => console.log(x))
   }
 
   ngOnDestroy(): void {
