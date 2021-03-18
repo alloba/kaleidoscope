@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  ImageServiceEndpoint: 'http://localhost:7000/'
+  ImageServiceEndpoint: 'http://www.alexlbates.com:7000/'
 };
 
 /*
