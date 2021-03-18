@@ -42,7 +42,7 @@ deploy2:
   before_script:
     - pip install awscli
   script:
-    - aws cloudformation deploy --template-file ./frontend-deploy.cft.yml --stack-name $STACK_NAME #credentials implicit via global variables???
+    - aws cloudformation deploy --no-fail-on-empty-changeset --template-file ./frontend-deploy.cft.yml --stack-name $STACK_NAME #credentials implicit via global variables???
     - aws s3 cp frontend/dist/kaleidoscope-frontend/ s3://${STACK_NAME} --recursive --acl public-read
   needs:
     - build2
