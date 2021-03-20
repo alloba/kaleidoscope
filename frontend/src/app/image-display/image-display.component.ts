@@ -46,6 +46,12 @@ export class ImageDisplayComponent implements OnInit, OnDestroy, AfterViewInit {
       this.transitionImageForward();
     });
 
+    /*
+    TODO: i really want to get consistent sizing going for PIP, across video changes.
+          https://developer.mozilla.org/en-US/docs/Web/API/Picture-in-Picture_API
+          That link above says you can apply css styling to the pip window.... so probably try that.
+     */
+
    /* These controls are for picture-in-picture functionality.
       Angular doesnt support mediaSession type automatically (read: conveniently). So we're going bog-standard script + ts-ignore for this.
 
