@@ -48,11 +48,11 @@ deploy2:
     - pip install awscli
   script:
     - echo "Attempting to build S3 bucket for media storage"
-    - aws cloudformation deploy --no-fail-on-empty-changeset --template-file ./media-storage.cft.yml --stack-name $STACK_NAME_MEDIA
+    - aws cloudformation deploy --no-fail-on-empty-changeset --template-file ./aws-architecture/media-storage.cft.yml --stack-name $STACK_NAME_MEDIA
     - echo "Completed media storage bucket creation/update"
 
     - echo "Attempting to build S3 bucket for frontend website serving"
-    - aws cloudformation deploy --no-fail-on-empty-changeset --template-file ./frontend-deploy.cft.yml --stack-name $STACK_NAME_FRONTEND #credentials implicit via global variables???
+    - aws cloudformation deploy --no-fail-on-empty-changeset --template-file ./aws-architecture/frontend-deploy.cft.yml --stack-name $STACK_NAME_FRONTEND #credentials implicit via global variables???
     - echo "Completed build/update for website"
 
     - echo "Moving frontend files to S3 bucket"
