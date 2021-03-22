@@ -59,6 +59,16 @@ paths:
       responses:
         '200':
           description: 'A string array response body.'
+  /refresh:
+    get:
+      summary: Refresh available images
+      description: >
+        Refreshes the available list of images that the backend will provide.
+        Images are maintained in a static lookup list to prevent read operations, so this endpoint will
+        trigger a full reload. This should be triggered after images are newly downloaded/added.
+      responses:
+        '200':
+          description: 'Image list was reloaded'
 
 
 
