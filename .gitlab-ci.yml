@@ -32,7 +32,15 @@ after_script:
 
 build2:
   stage: build
-  image: timbru31/java-node
+  image: maven:3.6.3-jdk-11
+  before_script:
+    - >
+      RUN apt-get install -y git-core curl build-essential openssl libssl-dev \
+      && git clone https://github.com/nodejs/node.git \
+      && cd node \
+      && ./configure \
+      && make \
+      && sudo make install
   script:
     - cd frontend
     - npm ci
