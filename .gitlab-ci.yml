@@ -32,32 +32,44 @@ after_script:
 
 build2:
   stage: build
-  image: node:current-alpine3.10
+  image: timbru31/java-node
   script:
     - cd frontend
     - npm ci
-    - npm run-script build
+    - cd ../
+    - npm --prefix ./frontend run build
+    - cp ./frontend/dist/kaleidoscope-frontend/* ./kaleidoscope-backend/src/main/resources/static
+    - mvn -f kaleidoscope-backend/ package
   artifacts:
     paths:
       - frontend/dist/kaleidoscope-frontend
+      - kaleidoscope-backend/target
 
 deploy2:
   stage: deploy
   image: python:latest
   before_script:
     - pip install awscli
+    - pip install awsebcli
   script:
     - echo "Attempting to build S3 bucket for media storage"
     - aws cloudformation deploy --no-fail-on-empty-changeset --template-file ./aws-architecture/media-storage.cft.yml --stack-name $STACK_NAME_MEDIA
     - echo "Completed media storage bucket creation/update"
 
-    - echo "Attempting to build S3 bucket for frontend website serving"
-    - aws cloudformation deploy --no-fail-on-empty-changeset --template-file ./aws-architecture/frontend-deploy.cft.yml --stack-name $STACK_NAME_FRONTEND #credentials implicit via global variables???
-    - echo "Completed build/update for website"
 
-    - echo "Moving frontend files to S3 bucket"
-    - aws s3 cp frontend/dist/kaleidoscope-frontend/ s3://${STACK_NAME_FRONTEND} --recursive --acl public-read
-    - echo "Completed copy of frontend files"
+    - echo "Attempting to EB Deploy"
+    - cd kaleidoscope-backend
+    - eb deploy
+    - echo "EB Deploy Complete"
+
+#    - echo "Attempting to build S3 bucket for frontend website serving"
+#    - aws cloudformation deploy --no-fail-on-empty-changeset --template-file ./aws-architecture/frontend-deploy.cft.yml --stack-name $STACK_NAME_FRONTEND #credentials implicit via global variables???
+#    - echo "Completed build/update for website"
+
+#    - echo "Moving frontend files to S3 bucket"
+#    - aws s3 cp frontend/dist/kaleidoscope-frontend/ s3://${STACK_NAME_FRONTEND} --recursive --acl public-read
+#    - echo "Completed copy of frontend files"
+
 
   needs:
     - build2

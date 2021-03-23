@@ -14,7 +14,11 @@ public class PropertiesDefault {
         this.environment = environment;
     }
 
-    public String imageDirectory(){
-        return environment.getProperty("imageDirectory");
+    public String awsRegion() {
+        return environment.getProperty("awsRegion");
+    }
+
+    public String mediaBucket() {
+        return environment.getProperty("mediaBucket");
     }
 }

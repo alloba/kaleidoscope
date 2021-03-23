@@ -47,7 +47,7 @@ export class ImageService {
   }
 
   public refreshImageList(): void {
-    this.httpClient.get<[string]>(this.apiUrl + 'imageList' + '?subDir=' + encodeURIComponent(this.subDirectory))
+    this.httpClient.get<[string]>(this.apiUrl + 'image-list' + '?subDir=' + encodeURIComponent(this.subDirectory))
       .subscribe({
         next: (x) => {
           let shuffleArray = x;

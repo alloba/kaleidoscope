@@ -2,7 +2,7 @@ package com.alloba.kaleidoscopebackend.controller;
 
 import com.alloba.kaleidoscopebackend.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,11 +25,11 @@ public class ImageController {
     }
 
     @GetMapping("image")
-    public ResponseEntity<FileSystemResource> getImage(@RequestParam("imageFile") String imageFile) {
+    public ResponseEntity<InputStreamResource> getImage(@RequestParam("imageFile") String imageFile) {
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.parseMediaType("video/webm"))
-                .body(new FileSystemResource(imageService.getImageFile(imageFile)));
+                .body(new InputStreamResource(imageService.getImageFile(imageFile)));
     }
 
     @GetMapping("image-list")
@@ -53,7 +53,8 @@ public class ImageController {
 
     @GetMapping("refresh")
     public ResponseEntity<String> refreshImageList() {
-        imageService.reloadBag();
+        imageService.loadImages();
+        imageService.loadDirectories();
         return ResponseEntity.ok("reloaded");
     }
 }
