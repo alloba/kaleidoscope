@@ -2,6 +2,8 @@ package com.alloba.kaleidoscopebackend.service;
 
 import com.alloba.kaleidoscopebackend.PropertiesDefault;
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.ListObjectsRequest;
+import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +34,21 @@ public class ImageService {
     }
 
     public void loadImages(){
-        this.loadedImageList = s3Client
-                .listObjects(properties.mediaBucket())
-                .getObjectSummaries()
+        ListObjectsRequest request = new ListObjectsRequest();
+        request.setBucketName(properties.mediaBucket());
+        List<S3ObjectSummary> summaries = new ArrayList<>();
+        do{
+            ObjectListing response = s3Client.listObjects(request);
+            summaries.addAll(response.getObjectSummaries());
+
+            if(response.isTruncated())
+                request.setMarker(response.getNextMarker());
+            else
+                request = null;
+        }
+        while (request != null);
+
+        this.loadedImageList = summaries
                 .stream()
                 .map(S3ObjectSummary::getKey)
                 .collect(Collectors.toList());
@@ -56,12 +70,14 @@ public class ImageService {
         return s3Object;
     }
 
-    public List<String> getImageList() {
-        return loadedImageList;
+    public String getImageFileString(String imageFile){
+        return s3Client.getUrl(properties.mediaBucket(), imageFile).toExternalForm();
     }
 
-    public List<String> getImageList(String subdir){
-        return this.loadedImageList.stream().filter(x -> x.startsWith(subdir)).collect(Collectors.toList());
+    public List<String> getImageList(Optional<String> subdir){
+        if(subdir.isEmpty() || File.separator.equals(subdir.get()))
+            return this.loadedImageList;
+        return this.loadedImageList.stream().filter(x -> x.startsWith(subdir.get())).collect(Collectors.toList());
     }
 
     public List<String> getAvailableImageDirectories() {
