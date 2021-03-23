@@ -1,8 +1,10 @@
-import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable, of, pipe, ReplaySubject} from 'rxjs';
+import {BehaviorSubject} from 'rxjs';
 import {environment} from 'src/environments/environment';
-import {FileMeta} from "../model/file-meta";
+import {FileMeta} from '../model/file-meta';
+import {ListObjectsV2Command, ListObjectsV2CommandOutput, S3Client} from '@aws-sdk/client-s3';
+import {fromPromise} from "rxjs/internal-compatibility";
+
 
 @Injectable({
   providedIn: 'root'
@@ -19,21 +21,62 @@ export class ImageService {
   public directoryList$: BehaviorSubject<string[]> = new BehaviorSubject<string[]>(['/']);
   public subDirectory = '';
 
-  private currentImageIndex: number = 0;
+  private currentImageIndex = 0;
   private images: string[] = [];
 
-  constructor(private httpClient: HttpClient) {
-    this.apiUrl = environment.ImageServiceEndpoint
-    this.refreshImageList();
-    this.loadDirectoryList();
+  private allImagesEver: string[] = [];
+
+  private REGION = environment.awsRegion;
+  private s3 = new S3Client({
+    region: this.REGION,
+    credentials: {
+      accessKeyId: environment.awsAccessKey,
+      secretAccessKey: environment.awsSecretKey
+    }
+  });
+
+  constructor() {
+    this.apiUrl = environment.ImageServiceEndpoint;
+    fromPromise(this.loadAllImagesFromS3()).subscribe(x => {
+      this.allImagesEver = x;
+      this.directoryList$.next(this.loadDirectoryList(x))
+      this.refreshImageList2();
+    })
+  }
+
+  private loadDirectoryList(imagePaths: string[]){
+    let dirs = new Set<string>();
+    dirs.add('*');
+    imagePaths.forEach(x => {
+      if(x.split("/").length > 1){
+        dirs.add(x.split("/")[0])
+      }
+    })
+    return Array.from(dirs);
+  }
+
+  private async loadAllImagesFromS3(){
+    let imageKeys: string[] = [];
+    let continuationToken: string | undefined = undefined
+    while(true){
+      let data: ListObjectsV2CommandOutput = await this.s3.send(new ListObjectsV2Command({Delimiter: "", Bucket: environment.awsBucket, ContinuationToken: continuationToken}));
+      let filterKeys = data.Contents?.map(x => x.Key).filter(x => x != undefined) as string[];
+      imageKeys.push(...filterKeys)
+      if(!data.IsTruncated){
+        break;
+      }
+      continuationToken = data.NextContinuationToken;
+    }
+
+    return imageKeys;
   }
 
   public loadNextImageInformationSet(): void {
-    this.currentImageIndex += 1
+    this.currentImageIndex += 1;
     if (this.currentImageIndex >= this.images.length) {
-      this.refreshImageList()
+      this.refreshImageList2();
     } else {
-      this.updateCurrentImage(this.images[this.currentImageIndex])
+      this.updateCurrentImage(this.images[this.currentImageIndex]);
     }
   }
 
@@ -42,43 +85,34 @@ export class ImageService {
     if (this.currentImageIndex < 0) {
       this.currentImageIndex = 0;
     } else {
-      this.updateCurrentImage(this.images[this.currentImageIndex])
+      this.updateCurrentImage(this.images[this.currentImageIndex]);
     }
   }
 
-  public refreshImageList(): void {
-    this.httpClient.get<[string]>(this.apiUrl + 'image-list' + '?subDir=' + encodeURIComponent(this.subDirectory))
-      .subscribe({
-        next: (x) => {
-          let shuffleArray = x;
-          this.shuffle(shuffleArray);
-          this.images = shuffleArray;
-          this.imageListSize$.next(x.length)
+  private getSubListOfImages(dir: string){
+    if(dir == "" || dir == "/" || dir == '*')
+      return this.allImagesEver;
+    return this.allImagesEver.filter(x => x.startsWith(dir))
+  }
 
-          this.currentImageIndex = -1; //start at -1 to deal with the increment behavior of next method call.
-          this.loadNextImageInformationSet();
-        }
-      });
+  public refreshImageList2(): void {
+    const shuffleArray = this.getSubListOfImages(this.subDirectory);
+    this.shuffle(shuffleArray);
+    this.images = shuffleArray;
+    this.imageListSize$.next(shuffleArray.length);
+
+    this.currentImageIndex = -1; // start at -1 to deal with the increment behavior of next method call.
+    this.loadNextImageInformationSet();
   }
 
   public updateCurrentImage(filename: string): void {
-    this.filename$.next(this.images[this.currentImageIndex])
+    this.filename$.next(this.images[this.currentImageIndex]);
     this.filenameUrl$.next(this.getImageUrl(filename));
     this.imageIndex$.next(this.currentImageIndex);
   }
 
   public getImageUrl(filename: string): string {
-    return this.apiUrl + 'image?imageFile=' + filename
-  }
-
-  public loadDirectoryList(): void {
-    this.httpClient.get<string[]>(this.apiUrl + 'available-directories')
-      .subscribe({
-        next: resp => {
-          console.log('found directories: ', resp)
-          this.directoryList$.next(resp)
-        }
-      })
+    return this.apiUrl + 'image?imageFile=' + filename;
   }
 
   /**
@@ -87,15 +121,15 @@ export class ImageService {
    * @param array - item to shuffle
    * @private
    */
-  private shuffle(array: any[]) {
+  private shuffle(array: any[]): void {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [array[i], array[j]] = [array[j], array[i]];
     }
   }
 
-  changeSubDir(dir: string) {
+  public changeSubDir(dir: string): void {
     this.subDirectory = dir;
-    this.refreshImageList();
+    this.refreshImageList2();
   }
 }
