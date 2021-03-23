@@ -38,6 +38,7 @@ build2:
     - npm ci
     - cd ../
     - npm --prefix ./frontend run build
+    - mkdir -p ./kaleidoscope-backend/src/main/resources/static # static dir is empty in git, so folder doesnt exist by default.
     - cp ./frontend/dist/kaleidoscope-frontend/* ./kaleidoscope-backend/src/main/resources/static
     - mvn -f kaleidoscope-backend/ package
   artifacts:
