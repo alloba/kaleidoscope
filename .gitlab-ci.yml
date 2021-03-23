@@ -34,7 +34,7 @@ build2:
   stage: build
   image: maven:3.6.3-jdk-11
   before_script:
-    - curl -fsSL https://deb.nodesource.com/setup_15.x
+    - curl -fsSL https://deb.nodesource.com/setup_15.x | bash
     - apt-get install -y nodejs
   script:
     - cd frontend
