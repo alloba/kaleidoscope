@@ -14,7 +14,7 @@ Metadata:
 Parameters:
   BucketNamed:
     Type: String
-    Default: kaleidoscope-frontend
+    Default: www.alexlbates.com
     Description: name for created s3 bucket.
 Resources:
   FrontendBucket:
