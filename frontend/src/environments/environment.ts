@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  ImageServiceEndpoint: 'http://kaleidoscope-combined.us-east-1.elasticbeanstalk.com/'
+  ImageServiceEndpoint: 'http://localhost:5000/'
 };
 
 /*

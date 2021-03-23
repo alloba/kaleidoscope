@@ -1,6 +1,7 @@
 package com.alloba.kaleidoscopebackend.controller;
 
 import com.alloba.kaleidoscopebackend.service.ImageService;
+import com.amazonaws.services.s3.model.S3Object;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
@@ -26,10 +27,13 @@ public class ImageController {
 
     @GetMapping("image")
     public ResponseEntity<InputStreamResource> getImage(@RequestParam("imageFile") String imageFile) {
+        S3Object image = imageService.getImageFile(imageFile);
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.parseMediaType("video/webm"))
-                .body(new InputStreamResource(imageService.getImageFile(imageFile)));
+                .header("Content-Length", String.valueOf(image.getObjectMetadata().getContentLength()))
+                .header("Accept-Ranges", "bytes")
+                .body(new InputStreamResource(image.getObjectContent()));
     }
 
     @GetMapping("image-list")

@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.io.InputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -52,9 +51,9 @@ public class ImageService {
         this.directories.add(File.separator);
     }
 
-    public InputStream getImageFile(String imageFile) {
+    public S3Object getImageFile(String imageFile) {
         S3Object s3Object = s3Client.getObject(properties.mediaBucket(), imageFile);
-        return s3Object.getObjectContent();
+        return s3Object;
     }
 
     public List<String> getImageList() {
