@@ -13,7 +13,7 @@
 image: busybox:latest
 
 variables:
-  STACK_NAME_FRONTEND: 'kaleidoscope-frontend'
+  STACK_NAME_FRONTEND: 'www.alexlbates.com'
   STACK_NAME_MEDIA: 'kaleidoscope-media'
 
 before_script:
