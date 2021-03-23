@@ -55,7 +55,7 @@ deploy2:
     - echo "Completed build/update for website"
 
     - echo "Moving frontend files to S3 bucket"
-    - aws s3 cp dist/kaleidoscope-frontend/ s3://${STACK_NAME_FRONTEND} --recursive --acl public-read
+    - aws s3 cp dist/kaleidoscope-frontend/ s3://www.alexlbates.com --recursive --acl public-read
     - echo "Completed copy of frontend files"
 
 
