@@ -32,47 +32,32 @@ after_script:
 
 build2:
   stage: build
-  image: maven:3.6.3-jdk-11
-  before_script:
-    - curl -fsSL https://deb.nodesource.com/setup_15.x | bash
-    - apt-get install -y nodejs
+  image: node:15.12.0-alpine3.10
   script:
     - cd frontend
     - npm ci
-    - cd ../
-    - npm --prefix ./frontend run build
-    - mkdir -p ./kaleidoscope-backend/src/main/resources/static # static dir is empty in git, so folder doesnt exist by default.
-    - cp ./frontend/dist/kaleidoscope-frontend/* ./kaleidoscope-backend/src/main/resources/static
-    - mvn -f kaleidoscope-backend/ package
+    - npm run build
   artifacts:
     paths:
       - frontend/dist/kaleidoscope-frontend
-      - kaleidoscope-backend/target
 
 deploy2:
   stage: deploy
   image: python:latest
   before_script:
     - pip install awscli
-    - pip install awsebcli
   script:
     - echo "Attempting to build S3 bucket for media storage"
     - aws cloudformation deploy --no-fail-on-empty-changeset --template-file ./aws-architecture/media-storage.cft.yml --stack-name $STACK_NAME_MEDIA
     - echo "Completed media storage bucket creation/update"
 
+    - echo "Attempting to build S3 bucket for frontend website serving"
+    - aws cloudformation deploy --no-fail-on-empty-changeset --template-file ./aws-architecture/frontend-deploy.cft.yml --stack-name $STACK_NAME_FRONTEND #credentials implicit via global variables???
+    - echo "Completed build/update for website"
 
-    - echo "Attempting to EB Deploy"
-    - cd kaleidoscope-backend
-    - eb deploy
-    - echo "EB Deploy Complete"
-
-#    - echo "Attempting to build S3 bucket for frontend website serving"
-#    - aws cloudformation deploy --no-fail-on-empty-changeset --template-file ./aws-architecture/frontend-deploy.cft.yml --stack-name $STACK_NAME_FRONTEND #credentials implicit via global variables???
-#    - echo "Completed build/update for website"
-
-#    - echo "Moving frontend files to S3 bucket"
-#    - aws s3 cp frontend/dist/kaleidoscope-frontend/ s3://${STACK_NAME_FRONTEND} --recursive --acl public-read
-#    - echo "Completed copy of frontend files"
+    - echo "Moving frontend files to S3 bucket"
+    - aws s3 cp frontend/dist/kaleidoscope-frontend/ s3://${STACK_NAME_FRONTEND} --recursive --acl public-read
+    - echo "Completed copy of frontend files"
 
 
   needs:
