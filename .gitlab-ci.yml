@@ -34,13 +34,8 @@ build2:
   stage: build
   image: maven:3.6.3-jdk-11
   before_script:
-    - >
-      apt-get install -y git-core curl build-essential openssl libssl-dev \
-      && git clone https://github.com/nodejs/node.git \
-      && cd node \
-      && ./configure \
-      && make \
-      && sudo make install
+    - curl -fsSL https://deb.nodesource.com/setup_15.x | sudo -E bash -
+    - apt-get install -y nodejs
   script:
     - cd frontend
     - npm ci
