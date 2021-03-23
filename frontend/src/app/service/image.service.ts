@@ -11,8 +11,6 @@ import {fromPromise} from "rxjs/internal-compatibility";
 })
 export class ImageService {
 
-  private readonly apiUrl: string;
-
   public filename$: BehaviorSubject<string> = new BehaviorSubject<string>('');
   public filenameUrl$: BehaviorSubject<string> = new BehaviorSubject<string>('');
   public currentImageMeta$: BehaviorSubject<FileMeta> = new BehaviorSubject<FileMeta>(new FileMeta());
@@ -36,7 +34,6 @@ export class ImageService {
   });
 
   constructor() {
-    this.apiUrl = environment.ImageServiceEndpoint;
     fromPromise(this.loadAllImagesFromS3()).subscribe(x => {
       this.allImagesEver = x;
       this.directoryList$.next(this.loadDirectoryList(x))
@@ -112,7 +109,7 @@ export class ImageService {
   }
 
   public getImageUrl(filename: string): string {
-    return this.apiUrl + 'image?imageFile=' + filename;
+    return filename
   }
 
   /**
