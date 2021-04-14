@@ -108,4 +108,8 @@ export class ImageDisplayComponent implements OnInit, OnDestroy, AfterViewInit {
   public decodeFilename(filename: string){
     return decodeURIComponent(filename);
   }
+
+  public getMediaType(): Observable {
+    return this.filename$.pipe(x => x.split(".")[1]); 
+  }
 }
