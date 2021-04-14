@@ -1,5 +1,5 @@
 import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
 import {ImageService} from '../service/image.service';
 import {FileMeta} from "../model/file-meta";
 
@@ -109,7 +109,7 @@ export class ImageDisplayComponent implements OnInit, OnDestroy, AfterViewInit {
     return decodeURIComponent(filename);
   }
 
-  public getMediaType(): Observable {
+  public getMediaType(): Observable<string> {
     return this.filename$.pipe(x => x.split(".")[1]); 
   }
 }
