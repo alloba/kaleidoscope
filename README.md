@@ -1,25 +1,38 @@
 # 'Kaleidoscope' Project
 
-This project was created with the intention to serve a collection of webm files on a private network, 
-to a web-browser. 
+This is an Angular webpage that provides a "never-ending" stream of music/video files. 
+Very simply, it pulls from an S3 folder source, and inserts a random file from that source onto the page.
+There are also very simple controls, like direct file linking and a next/previous button. 
 
-Files are selected in a random-ish fashion, and presented to the user. 
-These files then are played in the page, and cycled through when they are completed. 
-
-Pretty basic use-case, right?
+The media files used in this project are not sourced by anything in this codebase, they mainly come from 
+the [WSG Scraper](https://gitlab.com/alloba/wsg_scrape://gitlab.com/alloba/wsg_scraper) project.
 
 ## Running Project
-This project is split into two pieces, frontend and backend. 
-The frontend is a very standard Angular application, and the backend is a very standard Express webserver.
 
-Both of these apps can be launched in a coordinated fashion very easily by using the docker compose file that 
-is provided in the project. The compose file also outlines the information that must be provided to the 
-two services in order to run correctly. 
+This project should be very simple to run locally, since at this point it is just a basic Angular app. 
+From the main directory, simply run `npm install` to download project dependencies, and `npm run start` to get a local server running.
 
-Basically, the frontend needs no real configuration to get running. By default, it runs in prod mode, but 
-the only special consideration for environmental differences are defining correct endpoints for the backend service.
+The S3 bucket that is used as a media file source and the credentials used to access it can be changed via property files.
+The ones stored there currently have read-only access to the bucket.
 
-The backend needs a number of environment variables to be set before startup - things like the file directory to use 
-and where to pull meta info from. 
+Deployment is fully described by the architecture files and the GitLab CI file in the project. 
+Cloudformation is used to define AWS components (just S3 buckets with permissions, really), and publicly hosted GitLab runners are used to 
+handle actual execution. AWS credentials are stored encrypted in GitLab.
 
-Ideally, these two apps can be immediately built and ran just using `docker-compose up`. 
+**Note**: The S3 buckets and deployment to them is defined in this project, but the proper DNS routing is not. So with no tweaking, the cloudformation files here will leave you with 
+the ability to use a standard S3 link to get to the website, and nothing more. 
+
+## Short History
+
+This project has taken on a few iterations by this point. 
+By now I'd more consider it a way to play around with different methods of organizing frontend and backends for basic tasks. 
+
+It started out as a simple HTML + Javascript project backed by a Node Express server. That was then modified to 
+connect instead to a Spring Boot backend. During this time there was some fiddling around with having two separate apps vs 
+having a backend spring or express server just additionally provide the frontend files to a user.
+This is where the name of the project comes from ultimately (combined, vs the original frontend and backend pieces of the project that were stored separately).
+
+Partially out of a desire to simplify the project and partially out of a desire to move the application to the cloud instead of hosting the service out of a 
+private server on my LAN, the project changed further - first (briefly) operating as an elastic beanstalk application before shifting fully to just a simple website stored in an S3 bucket. 
+
+
