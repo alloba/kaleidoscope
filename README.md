@@ -5,7 +5,7 @@ Very simply, it pulls from an S3 folder source, and inserts a random file from t
 There are also very simple controls, like direct file linking and a next/previous button. 
 
 The media files used in this project are not sourced by anything in this codebase, they mainly come from 
-the [WSG Scraper](https://gitlab.com/alloba/wsg_scrape://gitlab.com/alloba/wsg_scraper) project.
+the [WSG Scraper](https://gitlab.com/alloba/wsg_scraper) project.
 
 ## Running Project
 
