@@ -32,6 +32,9 @@
 !.vscode/extensions.json
 .history/*
 
+# Terraform
+terraform/.terraform
+
 # misc
 /.sass-cache
 /connect.lock
