@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "website-bucket" {
-  bucket = "kaleidoscope-website-${terraform.workspace}"
+  bucket = "kaleidoscope.alexlbates.com"
 }
 
 resource "aws_s3_bucket_website_configuration" "website-access-config" {
