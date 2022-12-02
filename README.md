@@ -1,11 +1,12 @@
-# 'Kaleidoscope' Project
+# Kaleidoscope Project
 
 This is an Angular webpage that provides a "never-ending" stream of music/video files. 
 Very simply, it pulls from an S3 folder source, and inserts a random file from that source onto the page.
 There are also very simple controls, like direct file linking and a next/previous button. 
 
-The media files used in this project are not sourced by anything in this codebase, they mainly come from 
-the [WSG Scraper](https://gitlab.com/alloba/wsg_scraper) project.
+The media files used in this project are not sourced by anything in this codebase. 
+They mainly come from the [Archivist](https://github.com/alloba/archivist) project,
+and the remainder being manually added. 
 
 ## Running Project
 
@@ -14,10 +15,11 @@ From the main directory, simply run `npm install` to download project dependenci
 
 The S3 bucket that is used as a media file source and the credentials used to access it can be changed via property files.
 The ones stored there currently have read-only access to the bucket.
+I've decided that public access to those files is allowable, so the key gets to stay. 
 
-Deployment is fully described by the architecture files and the GitLab CI file in the project. 
-Cloudformation is used to define AWS components (just S3 buckets with permissions, really), and publicly hosted GitLab runners are used to 
-handle actual execution. AWS credentials are stored encrypted in GitLab.
+Deployment is fully described by the architecture files and the GitHub CI file in the project. 
+Cloudformation is used to define AWS components (just S3 buckets with permissions, really), and publicly hosted GitHub runners are used to 
+handle actual execution. AWS credentials are stored encrypted in GitHub.
 
 **Note**: The S3 buckets and deployment to them is defined in this project, but the proper DNS routing is not. So with no tweaking, the cloudformation files here will leave you with 
 the ability to use a standard S3 link to get to the website, and nothing more. 
