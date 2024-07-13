@@ -20,6 +20,7 @@ provider "aws" {
       environment = terraform.workspace
     }
   }
+  region = "us-east-1"
 }
 
 # TODO would prefer a centralized module.
