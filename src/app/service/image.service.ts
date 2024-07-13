@@ -1,9 +1,8 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, from} from 'rxjs';
 import {environment} from 'src/environments/environment';
 import {FileMeta} from '../model/file-meta';
 import {ListObjectsV2Command, ListObjectsV2CommandOutput, S3Client} from '@aws-sdk/client-s3';
-import {fromPromise} from "rxjs/internal-compatibility";
 
 
 @Injectable({
@@ -37,7 +36,7 @@ export class ImageService {
 
   constructor() {
     this.bucketUrlPath = environment.bucketUrlPath;
-    fromPromise(this.loadAllImages()).subscribe(x => {
+    from(this.loadAllImages()).subscribe(x => {
       this.allImagesEver = x;
       this.directoryList$.next(this.loadDirectoryList(x))
       this.refreshImageList2();
@@ -55,12 +54,12 @@ export class ImageService {
     return Array.from(dirs);
   }
 
-  private async loadAllImages(){
+  private async loadAllImages(): Promise<string[]>{
     let imageKeys: string[] = [];
     let continuationToken: string | undefined = undefined
     while(true){
       let data: ListObjectsV2CommandOutput = await this.s3.send(new ListObjectsV2Command({Delimiter: "", Bucket: environment.awsBucket, ContinuationToken: continuationToken}));
-      let filterKeys = data.Contents?.map(x => x.Key).filter(x => x != undefined) as string[];
+      let filterKeys = data.Contents?.map((x: any) => x.Key).filter((x: any) => x != undefined) as string[];
       imageKeys.push(...filterKeys)
       if(!data.IsTruncated){
         break;
