@@ -3,10 +3,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - main
-    paths:
-      - 'kaleidoscope'
-      - '.github/workflows/kaleidoscope.yml'
+      - master
 
 jobs:
 
