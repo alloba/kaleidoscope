@@ -22,11 +22,11 @@ jobs:
         uses: hashicorp/setup-terraform@v1
 
       - name: Terraform Init
-        working-directory: ./
+        working-directory: ./terraform
         run: terraform init
 
       - name: Apply Terraform
-        working-directory: ./
+        working-directory: ./terraform
         run: terraform apply --auto-approve
 
   app-deploy:
@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: kaleidoscope
+        working-directory: ./
     steps:
       - name: Checkout
         uses: actions/checkout@v3
