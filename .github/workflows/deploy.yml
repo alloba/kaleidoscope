@@ -44,16 +44,5 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Build
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20.7.x'
-
-      - name: Install Dependencies
-        run: npm ci
-
-      - name: Build
-        run: npm run build:prod
-
       - name: Deploy
-        run: aws s3 sync dist/kaleidoscope s3://kaleidoscope.alexlbates.com --delete
+        run: aws s3 sync ./src/ s3://kaleidoscope.alexlbates.com --delete
