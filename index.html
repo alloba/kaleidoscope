@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Central Div with Radio Buttons</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        #display-area {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #000000;
+        }
+        #radio-buttons {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            background-color: #000000;
+        }
+        #video-area {
+            position: absolute;
+            min-width: 80%;
+            min-height: 80%;
+            max-height: 80%;
+            max-width: 80%;
+            width: auto;
+            height: auto;
+            background-size: cover;
+            overflow: hidden;
+        }
+        #navigation-buttons {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            background-color: #1a1a1a;
+            border-top: 1px solid #333;
+        }
+
+        #previous-button, #next-button {
+            width: 150px;
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        #previous-button:hover, #next-button:hover {
+            background: linear-gradient(145deg, #3a3a3a, #2a2a2a);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        #previous-button:active, #next-button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        #counter {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="display-area">
+        <video id="video-area" controls autoplay><source id="video-source"></video>
+    </div>
+    <div id="radio-buttons">
+    </div>
+    <div id="navigation-buttons">
+        <button id="previous-button">&#8592; Previous</button>
+        <button id="next-button">Next &#8594;</button>
+    </div>
+    <div id="counter"></div>
+
+<script src="ContentClasses.js"></script>
+<script src="index.js"></script>
+</body>
+</html>
