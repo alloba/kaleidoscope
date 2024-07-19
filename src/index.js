@@ -116,14 +116,11 @@ function initializeRadioButtons(optionsList){
 }
 
 function setActiveCategoryByRadioButton(buttonEvent){
-    console.log('set begin')
-    console.log(buttonEvent)
     const categoryName = buttonEvent.target.value
     console.log(`Changing active media category to ${categoryName}`)
 
     activeContentIndex = 0
     activeContent = shuffleArrayIntoNew(categories.get(categoryName))
-    console.log(activeContent)
 
     setCurrentlyPlayingMedia(activeContent[activeContentIndex])
 }
