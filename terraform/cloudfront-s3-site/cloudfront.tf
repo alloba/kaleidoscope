@@ -20,7 +20,7 @@ resource "aws_cloudfront_distribution" "website-routing" {
 
   # Default routing logic. When no other defined behaviors match, this one is used.
   default_cache_behavior {
-    allowed_methods        = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+    allowed_methods        = ["GET", "HEAD", "OPTIONS"] # static site, read-only
     cached_methods         = ["GET", "HEAD"]
     target_origin_id       = var.s3_bucket_name # referring to the origin defined above.
 
@@ -31,10 +31,10 @@ resource "aws_cloudfront_distribution" "website-routing" {
     max_ttl                = 120
 
     forwarded_values {
-      query_string = true
+      query_string = false
       headers = []
       cookies {
-        forward = "all"
+        forward = "none"
       }
     }
   }
