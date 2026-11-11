@@ -1,8 +1,17 @@
 const DEBUG_LIMIT_PAGE_RESULTS = false
 const xmlParser = new DOMParser()
 const LOADING_MESSAGE = 'Fetching Content. Please Wait...'
+const MEDIA_BASE_URL = 'https://kaleidoscope-media.s3.us-east-1.amazonaws.com/'
+// Files that archivist keeps beside the media (hash manifest, published index). They are never media.
+const SIDECAR_NAME_PREFIX = '.archivist-'
+const INDEX_FILENAME = '.archivist-index.json'
 
-async function listObjectsInS3Bucket() {
+function isSidecarKey(key){
+    return key.split('/').pop().startsWith(SIDECAR_NAME_PREFIX)
+}
+
+// Slow path: pages through every key under the prefix (1000 per request, one after another).
+async function listObjectsInS3Bucket(prefix = null) {
     let allContent = []
     let nextMarker = null
     let pagingCount = 1
@@ -11,7 +20,7 @@ async function listObjectsInS3Bucket() {
         updateCounter(LOADING_MESSAGE + ` page ${pagingCount}`) //breaks my separation between pure and stateful ish, but it's nice to get loading updates on the page.
         pagingCount += 1
 
-        const res = await makePagedCall(nextMarker)
+        const res = await makePagedCall(nextMarker, {prefix})
         allContent = allContent.concat(res.contents)
 
         if(! res.isTruncated){
@@ -32,30 +41,69 @@ async function listObjectsInS3Bucket() {
     }
 }
 
-async function makePagedCall(marker){
-    let requestUrl = 'https://kaleidoscope-media.s3.us-east-1.amazonaws.com/'
-    if (marker != null){
-        requestUrl += `?marker=${encodeURIComponent(marker)}` // markers are raw keys, so always encode here
-    }
-    const res = await fetch(requestUrl, {method: 'GET'})
+async function makePagedCall(marker, {prefix = null, delimiter = null} = {}){
+    const params = new URLSearchParams() // encodes for us. markers are raw keys, so that matters
+    if (marker != null) params.set('marker', marker)
+    if (prefix != null) params.set('prefix', prefix)
+    if (delimiter != null) params.set('delimiter', delimiter)
+    const query = params.toString()
+    const res = await fetch(MEDIA_BASE_URL + (query ? `?${query}` : ''), {method: 'GET'})
     if (! res.ok) {
         throw Error(`S3 list request failed: ${res.status} ${res.statusText}`)
     }
     return new S3ListResults(await res.text())
 }
 
-function prepareCategories(allContentEntries){
+// Fast path: archivist publishes a names-only index beside the media in each folder, so a handful of small parallel
+// requests replace paging through the whole bucket. Folders without an index are listed directly instead.
+async function listKeysViaIndexes() {
+    const root = await makePagedCall(null, {delimiter: '/'}) // top-level folders (and any loose files), in one request
+    if (root.isTruncated || root.commonPrefixes.length === 0) {
+        throw Error('Top-level listing is not usable for index loading.')
+    }
+    updateCounter(LOADING_MESSAGE + ` ${root.commonPrefixes.length} folders`)
+    const perFolder = await Promise.all(root.commonPrefixes.map(async prefix => {
+        // no-cache: always revalidate (cheap, it is ETag based), so new files show up promptly
+        const res = await fetch(MEDIA_BASE_URL + prefix + INDEX_FILENAME, {cache: 'no-cache'})
+        if (res.status === 404 || res.status === 403) {
+            console.log(`No index in ${prefix}, listing it directly.`)
+            return (await listObjectsInS3Bucket(prefix)).map(x => x.key)
+        }
+        if (! res.ok) {
+            throw Error(`Index request failed for ${prefix}: ${res.status} ${res.statusText}`)
+        }
+        const index = await res.json()
+        if (index?.version !== 1 || ! Array.isArray(index.files)) {
+            throw Error(`Unrecognized index format in ${prefix}`)
+        }
+        return index.files.map(name => prefix + name)
+    }))
+    return root.contents.map(x => x.key).concat(perFolder.flat())
+}
+
+async function loadMediaKeys() {
+    let keys
+    try {
+        keys = await listKeysViaIndexes()
+    } catch (err) {
+        console.warn('Could not use the published indexes. Falling back to listing the whole bucket.', err)
+        keys = (await listObjectsInS3Bucket()).map(x => x.key)
+    }
+    return keys.filter(key => ! isSidecarKey(key))
+}
+
+function prepareCategories(allKeys){
     const categories = new Map()
 
     // always include an artificial 'all' category
-    categories.set('all', allContentEntries.map(x => x.key))
+    categories.set('all', [...allKeys])
 
-    allContentEntries.forEach(x => {
-        const category = x.key.split("/")[0]
+    allKeys.forEach(key => {
+        const category = key.split("/")[0]
         if (! categories.has(category)){
             categories.set(category, [])
         }
-        categories.get(category).push(x.key)
+        categories.get(category).push(key)
     })
 
     return categories
@@ -121,7 +169,7 @@ function setCurrentlyPlayingMedia(contentKey){
     const videoContainer = document.getElementById('video-area')
 
     updateCounter()
-    videoContainer.src = `https://kaleidoscope-media.s3.us-east-1.amazonaws.com/${contentKey}`
+    videoContainer.src = MEDIA_BASE_URL + contentKey
 }
 
 function playNext(){
@@ -148,9 +196,9 @@ function initializePage(){
         }
     })
 
-    listObjectsInS3Bucket()
-        .then(allContent => {
-            categories = prepareCategories(allContent)
+    loadMediaKeys()
+        .then(allKeys => {
+            categories = prepareCategories(allKeys)
             initializeRadioButtons([...categories.keys()])
         })
         .catch(err => {

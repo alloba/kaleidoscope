@@ -18,11 +18,15 @@ python -m http.server 8000
 # then visit http://localhost:8000
 ```
 
-On load the page lists the whole media bucket (it takes a few seconds, since the list is paged 1000 keys at a time).
+On load the page builds its media list from the per-folder indexes. Until archivist has published them (or for a folder
+that has none) it pages through the S3 listing, 1000 keys at a time, which takes noticeably longer.
 
 ## How it works
 
-- load a list of all files in the `kaleidoscope-media` bucket
+- load the list of files: list the bucket's top-level folders (one request), then read the
+  `.archivist-index.json` that archivist publishes in each folder (small, in parallel).
+  A folder with no index is listed directly instead, and if the index path fails entirely the page falls back to
+  listing the whole bucket. Archivist's `.archivist-*` files are never treated as media.
 - organize them by top-level folder, plus an artificial `all` category
 - provide a radio button for each category
 - shuffle the selected category and play through it; files that fail to load are skipped

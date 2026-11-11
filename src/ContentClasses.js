@@ -2,6 +2,9 @@ class S3ListResults {
     constructor(textResponse) {
         const domParse = [... xmlParser.parseFromString(textResponse, 'text/xml').childNodes[0].childNodes]
 
+        this.commonPrefixes = domParse.filter(x => x.nodeName === 'CommonPrefixes')
+            .map(x => [...x.childNodes].find(y => y.nodeName === 'Prefix')?.textContent)
+            .filter(x => x)
         this.contents = domParse.filter(x => x.nodeName === 'Contents').map(y => new ContentEntry(y))
         this.bucketName = domParse.find(x => x.nodeName === 'Name')?.textContent
         this.isTruncated = domParse.find(x => x.nodeName === 'IsTruncated')?.textContent === "true"
