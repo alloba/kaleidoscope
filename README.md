@@ -17,18 +17,8 @@ TODO - probably just launch page in browser.
 Getting rid of Angular. 
 It's a single page with a couple of event hooks, so I'm hoping it's relatively chill. 
 
-These values matter for pulling s3 files:   
-
-```
-bucketUrlPath: 'https://kaleidoscope-media.s3.us-east-1.amazonaws.com/',
-awsRegion: 'us-east-1',
-awsBucket: 'kaleidoscope-media',
-//these aws credentials are for RO S3 access. Meaning, it matters 0% if someone skims this as far as i am concerned.
-awsAccessKey: 'REMOVED-ACCESS-KEY',
-awsSecretKey: 'REMOVED-SECRET-KEY'
-```
-
-_Note: If I can find a different way to grab the list of files from s3 then I can ditch the credentials._ 
+The page lists the public `kaleidoscope-media` bucket anonymously (bucket policy allows `s3:ListBucket` and
+`s3:GetObject`), so no AWS credentials are needed or stored in this repo.
 
 The main idea is: 
 - load a list of all files
