@@ -1,7 +1,7 @@
 resource "aws_cloudfront_distribution" "website-routing" {
   comment = var.cloudfront_distribution_description
   enabled = var.cloudfront_distribution_enabled
-  aliases = var.route_53_record_names # TODO this probably doesn't work since the records are bare...
+  aliases = var.route_53_record_names
   default_root_object = var.cloudfront_distribution_default_root_object
   price_class = var.cloudfront_distribution_price_class
 
