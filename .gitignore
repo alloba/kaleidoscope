@@ -16,3 +16,7 @@ terraform/.terraform
 .DS_Store
 Thumbs.db
 
+
+# Terraform state (should live in the s3 backend, never in git)
+*.tfstate
+*.tfstate.*

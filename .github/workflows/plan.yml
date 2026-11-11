@@ -1,0 +1,47 @@
+name: Terraform Plan
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'terraform/**'
+      - '.github/workflows/plan.yml'
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  plan:
+    environment: main_env
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: ${{ vars.AWS_REGION }}
+      TF_PLUGIN_CACHE_DIR: ${{ github.workspace }}/.terraform-plugin-cache
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./terraform
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "~> 1.17"
+
+      - name: Cache Terraform providers
+        uses: actions/cache@v4
+        with:
+          path: .terraform-plugin-cache
+          key: terraform-providers-${{ runner.os }}-${{ hashFiles('terraform/.terraform.lock.hcl') }}
+
+      - name: Prepare plugin cache dir
+        run: mkdir -p "$TF_PLUGIN_CACHE_DIR"
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Plan
+        run: terraform plan -input=false -no-color

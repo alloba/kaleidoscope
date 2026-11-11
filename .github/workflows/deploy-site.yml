@@ -1,0 +1,30 @@
+name: Deploy Site
+
+# Syncs ./src to the site bucket. Infrastructure changes are handled
+# separately by the Terraform Plan / Terraform Apply workflows.
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+    paths:
+      - 'src/**'
+      - '.github/workflows/deploy-site.yml'
+
+jobs:
+  deploy-site:
+    environment: main_env
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: ${{ vars.AWS_REGION }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install AWS CLI
+        uses: ankurk91/install-aws-cli-action@v1
+
+      - name: Deploy
+        run: aws s3 sync ./src/ s3://kaleidoscope.alexlbates.com --delete
