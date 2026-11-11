@@ -59,9 +59,8 @@ function prepareCategories(allContentEntries){
         const category = x.key.split("/")[0]
         if (! categories.has(category)){
             categories.set(category, [])
-        } else {
-            categories.get(category).push(x.key)
         }
+        categories.get(category).push(x.key)
     })
 
     return categories
