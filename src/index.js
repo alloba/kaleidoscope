@@ -37,9 +37,11 @@ async function makePagedCall(marker){
     if (marker != null){
         requestUrl += `?marker=${encodeURIComponent(marker)}` // markers are raw keys, so always encode here
     }
-    const requestBody = await fetch(requestUrl, {method: 'GET'})
-        .then(res => res.text())
-    return new S3ListResults(requestBody)
+    const res = await fetch(requestUrl, {method: 'GET'})
+    if (! res.ok) {
+        throw Error(`S3 list request failed: ${res.status} ${res.statusText}`)
+    }
+    return new S3ListResults(await res.text())
 }
 
 function prepareCategories(allContentEntries){
@@ -88,10 +90,12 @@ function initializeRadioButtons(optionsList){
         radioButton.type = 'radio';
         radioButton.name = 'category';
         radioButton.value = option;
+        radioButton.id = `category-${option}`;
         radioButton.onclick = setActiveCategoryByRadioButton
         
         const label = document.createElement('label');
         label.textContent = option;
+        label.htmlFor = radioButton.id;
         
         radioButtonsContainer.appendChild(radioButton);
         radioButtonsContainer.appendChild(label);
@@ -149,11 +153,16 @@ function initializePage(){
             categories = prepareCategories(allContent)
             initializeRadioButtons([...categories.keys()])
         })
+        .catch(err => {
+            console.error(err)
+            updateCounter('Failed to load the media list. Try refreshing the page.')
+        })
 
 
     const previousButton = document.getElementById('previous-button');
     const nextButton = document.getElementById('next-button');
     previousButton.addEventListener('click', () => {
+        if (activeContent.length === 0) return // nothing loaded yet
         if (activeContentIndex > 0){
             activeContentIndex -= 1
         }
@@ -161,6 +170,7 @@ function initializePage(){
     });
 
     nextButton.addEventListener('click', () => {
+        if (activeContent.length === 0) return // nothing loaded yet
         if (activeContentIndex < activeContent.length - 1){
             activeContentIndex += 1
         }
