@@ -8,18 +8,28 @@ resource "aws_s3_bucket_policy" "kaleidoscope_media" {
 }
 
 data "aws_iam_policy_document" "kaleidoscope_media_bucket_policy" {
+  # listing applies to the bucket itself
   statement {
-    sid    = "test-statement"
-    actions = ["s3:ListBucket"]
-    effect = "Allow"
+    sid       = "PublicListBucket"
+    effect    = "Allow"
+    actions   = ["s3:ListBucket"]
+    resources = [aws_s3_bucket.kaleidoscope_media.arn]
     principals {
-      type = "AWS"
+      type        = "AWS"
       identifiers = ["*"]
     }
-    resources = [
-      aws_s3_bucket.kaleidoscope_media.arn,
-      "${aws_s3_bucket.kaleidoscope_media.arn}/*"
-    ]
+  }
+
+  # reading applies to the objects inside it
+  statement {
+    sid       = "PublicGetObject"
+    effect    = "Allow"
+    actions   = ["s3:GetObject"]
+    resources = ["${aws_s3_bucket.kaleidoscope_media.arn}/*"]
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
   }
 }
 
