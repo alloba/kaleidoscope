@@ -115,25 +115,33 @@ function setActiveCategoryByRadioButton(buttonEvent){
 function setCurrentlyPlayingMedia(contentKey){
     console.log(`Setting media playback to ${contentKey}`)
     const videoContainer = document.getElementById('video-area')
-    const fileType = contentKey.split('.').slice(-1)[0]
-
-    // not sure if these two lines actually work. but all the content is webm, so it's not a big deal at the moment
-    const videoSrc = document.createElement('source')
-    videoSrc.setAttribute('type', `video/${fileType}`)
 
     updateCounter()
     videoContainer.src = `https://kaleidoscope-media.s3.us-east-1.amazonaws.com/${contentKey}`
 }
 
+function playNext(){
+    activeContentIndex += 1
+    if(activeContentIndex >= activeContent.length){
+        activeContentIndex = 0
+    }
+    setCurrentlyPlayingMedia(activeContent[activeContentIndex])
+}
+
 function initializePage(){
     const videoElement = document.getElementById('video-area')
     videoElement.volume = 0.2
-    videoElement.addEventListener('ended', (e) => {
-        activeContentIndex += 1
-        if(activeContentIndex >= activeContent.length){
-            activeContentIndex = 0
+    videoElement.addEventListener('ended', playNext)
+    videoElement.addEventListener('playing', () => consecutiveErrors = 0)
+    // a file that fails to load shouldn't stall the stream. skip it, unless everything is failing (ex: offline).
+    videoElement.addEventListener('error', () => {
+        consecutiveErrors += 1
+        console.log(`Failed to load ${activeContent[activeContentIndex]} (${consecutiveErrors} in a row)`)
+        if (consecutiveErrors < activeContent.length) {
+            playNext()
+        } else {
+            updateCounter('Unable to load media.')
         }
-        setCurrentlyPlayingMedia(activeContent[activeContentIndex])
     })
 
     listObjectsInS3Bucket()
@@ -163,6 +171,7 @@ function initializePage(){
 let categories = new Map()
 let activeContent = []
 let activeContentIndex = 0
+let consecutiveErrors = 0
 
 updateCounter(LOADING_MESSAGE)
 initializePage()
