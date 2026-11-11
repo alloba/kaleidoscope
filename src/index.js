@@ -35,7 +35,7 @@ async function listObjectsInS3Bucket() {
 async function makePagedCall(marker){
     let requestUrl = 'https://kaleidoscope-media.s3.us-east-1.amazonaws.com/'
     if (marker != null){
-        requestUrl += `?marker=${marker}`
+        requestUrl += `?marker=${encodeURIComponent(marker)}` // markers are raw keys, so always encode here
     }
     const requestBody = await fetch(requestUrl, {method: 'GET'})
         .then(res => res.text())
