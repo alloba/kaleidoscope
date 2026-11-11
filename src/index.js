@@ -66,17 +66,12 @@ function prepareCategories(allContentEntries){
     return categories
 }
 
-// gross approach. but, I've messed up on it twice so far, and it seems to work :P
+// Fisher-Yates shuffle, returns a new array and leaves the input alone.
 function shuffleArrayIntoNew(arrayIn){
-    let newArr = []
-    const originalSize = arrayIn.length
-    const indexBag = [...Array(arrayIn.length).keys()]
-
-    while (newArr.length < originalSize){
-        let size = indexBag.length
-        const randomIndex = Math.floor(Math.random() * size)
-        newArr.push(arrayIn[randomIndex])
-        indexBag.splice(randomIndex, 1)
+    const newArr = [...arrayIn]
+    for (let i = newArr.length - 1; i > 0; i--){
+        const j = Math.floor(Math.random() * (i + 1));
+        [newArr[i], newArr[j]] = [newArr[j], newArr[i]]
     }
     return newArr
 }
