@@ -5,17 +5,11 @@ const LOADING_MESSAGE = 'Fetching Content. Please Wait...'
 async function listObjectsInS3Bucket() {
     let allContent = []
     let nextMarker = null
-    let paging = true
     let pagingCount = 1
-    while (paging){
+    while (true){
         console.log(`Fetching content: page ${pagingCount}`)
         updateCounter(LOADING_MESSAGE + ` page ${pagingCount}`) //breaks my separation between pure and stateful ish, but it's nice to get loading updates on the page.
         pagingCount += 1
-
-        if(DEBUG_LIMIT_PAGE_RESULTS){
-            console.log('Debug setting - limiting content results to 1 page.')
-            paging = false
-        }
 
         const res = await makePagedCall(nextMarker)
         allContent = allContent.concat(res.contents)
@@ -23,20 +17,19 @@ async function listObjectsInS3Bucket() {
         if(! res.isTruncated){
             return allContent
         }
+        if(DEBUG_LIMIT_PAGE_RESULTS){
+            console.log('Debug setting - limiting content results to 1 page.')
+            return allContent
+        }
 
         const prevMarker = nextMarker
-        if(res.nextMarker != null){
-            nextMarker = res.nextMarker
-        } else {
-            nextMarker = encodeURIComponent(res.contents[res.contents.length - 1].key) //contents come back in alphabetical order, so this works.
-        }
+        // NextMarker is only returned when a delimiter is used. otherwise, the last key of the (alphabetical) page works.
+        nextMarker = res.nextMarker ?? res.contents[res.contents.length - 1].key
 
         if (prevMarker === nextMarker){
             throw Error(`Duplicated marker -- will not continue, to prevent looping -> ${prevMarker}::${nextMarker}`)
         }
     }
-
-    return allContent
 }
 
 async function makePagedCall(marker){
