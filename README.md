@@ -2,7 +2,7 @@
 
 This is a simple webpage that provides a "never-ending" stream of music/video files.
 Very simply, it pulls from an S3 folder source, and inserts a random file from that source onto the page.
-There are also very simple controls, like direct file linking and a next/previous button.
+There are also very simple controls, like a next/previous button and a category picker.
 
 The media files used in this project are not sourced by anything in this codebase.
 They mainly come from the [Archivist](https://github.com/alloba/archivist) project,
@@ -10,20 +10,31 @@ with the remainder being manually added (very uncommon).
 
 ## Running Project
 
-TODO - probably just launch page in browser. 
+It's a static page with no build step. Serve `src/` with anything and open it:
 
-## Migration Notes
+```
+cd src
+python -m http.server 8000
+# then visit http://localhost:8000
+```
 
-Getting rid of Angular. 
-It's a single page with a couple of event hooks, so I'm hoping it's relatively chill. 
+On load the page lists the whole media bucket (it takes a few seconds, since the list is paged 1000 keys at a time).
 
-The page lists the public `kaleidoscope-media` bucket anonymously (bucket policy allows `s3:ListBucket` and
-`s3:GetObject`), so no AWS credentials are needed or stored in this repo.
+## How it works
 
-The main idea is: 
-- load a list of all files
-- organize them by subdirectory 
-- provide checkboxes for all the lists
-- randomly load files in to play in the main area depending on which checkbox is selected. 
+- load a list of all files in the `kaleidoscope-media` bucket
+- organize them by top-level folder, plus an artificial `all` category
+- provide a radio button for each category
+- shuffle the selected category and play through it; files that fail to load are skipped
 
-should be easy enough... 
+The bucket is public (the policy allows `s3:ListBucket` and `s3:GetObject`), so the page needs no AWS credentials.
+Don't put any in this repo.
+
+## Infrastructure and deploys
+
+- `terraform/` defines the media bucket, plus the site bucket, CloudFront distribution and DNS record
+  (`kaleidoscope.alexlbates.com`) via the `cloudfront-s3-site` module.
+- GitHub Actions workflows (`.github/workflows/`):
+  - `plan.yml` - `terraform plan` on pushes to master that touch `terraform/`, and on pull requests.
+  - `apply.yml` - manual only. Review the plan first, then run this from the Actions tab.
+  - `deploy-site.yml` - syncs `src/` to the site bucket on pushes that touch `src/`.
